@@ -67,7 +67,7 @@
       {% hook 'product:single.description.start' %}
 
       <div class="flex flex-wrap items-center gap-3" data-reveal="down">
-        {% if product.discount_percentage %}<span class="pill bg-olive text-gold num">وفري {{ product.discount_percentage }}</span>{% endif %}
+        {% if product.discount_percentage %}<span class="pill bg-olive text-gold num">وفري {{ product.discount_percentage|replace({'%': ''})|round }}%</span>{% endif %}
         {% if product.rating %}
           <salla-rating-stars data-testid="store-product-rating" value="{{ product.rating.stars }}" reviews="{{ product.rating.count }}"></salla-rating-stars>
         {% endif %}

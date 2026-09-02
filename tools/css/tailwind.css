@@ -1,4 +1,12 @@
-@import "tailwindcss";
+/* Tailwind's theme and preflight stay in cascade layers, but its utilities and
+   our own component/utility rules are emitted UNLAYERED (see `@tailwind
+   utilities` below). Salla injects unlayered global CSS into every page
+   (`.hidden{display:none}`, `.btn`, `.btn-primary`, ...) and unlayered rules
+   always beat layered ones, which silently killed `lg:flex`, `sm:block` and
+   our button styles on the live store. */
+@layer theme, base;
+@import "tailwindcss/theme.css" layer(theme);
+@import "tailwindcss/preflight.css" layer(base);
 @source "../../src/views";
 @source "../../src/assets/js/mussdl.js";
 
@@ -99,7 +107,8 @@
    Components
    ========================================================================== */
 
-@layer components {
+/* Components come BEFORE `@tailwind utilities` so a utility on the same
+   element still wins, exactly as it did inside the components layer. */
 
   /* --- Buttons ---------------------------------------------------------- */
 
@@ -233,13 +242,13 @@
     background-size: 200% 100%;
     animation: var(--animate-shimmer);
   }
-}
 
 /* ==========================================================================
    Utilities
    ========================================================================== */
 
-@layer utilities {
+@tailwind utilities;
+
   .shell { @apply mx-auto w-full max-w-[1280px] px-4 sm:px-6 lg:px-8; }
 
   /* Fluid type — locks the ends so headlines never overflow a 320px phone. */
@@ -267,12 +276,10 @@
      has confirmed it can animate it back in — so a JS failure never blanks
      the page. */
   .js-motion [data-reveal] { opacity: 0; }
-}
 
 /* --- Salla web components inside the Mussdl layout ------------------------
    Plain CSS on purpose: Tailwind v4 can't @apply the custom component classes,
    and these hooks reach into markup the platform renders, not ours. */
-@layer components {
   salla-quantity-input { display: inline-flex; align-items: center; }
   salla-breadcrumb { font-size: 12.5px; }
   salla-breadcrumb a { color: var(--color-ink-soft); transition: color .2s; }
@@ -309,4 +316,3 @@
     border-color: var(--color-olive); background: color-mix(in srgb, var(--color-olive) 8%, transparent);
     box-shadow: 0 10px 26px -18px rgba(78,79,62,.9);
   }
-}

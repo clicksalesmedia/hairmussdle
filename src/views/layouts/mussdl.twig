@@ -17,9 +17,10 @@
         window.header_is_sticky = true;
         window.enable_add_product_toast = true;
         window.can_access_wallet = {{ user.can_access_wallet | json_encode }};
+        {# `raw`: Twig would otherwise HTML-escape the quotes json_encode emits and break the script. #}
         window.mussdl = {
-            productUrl: {{ theme.settings.get('mussdl_product_url', '/')|json_encode }},
-            whatsapp:   {{ theme.settings.get('mussdl_whatsapp', '')|json_encode }}
+            productUrl: {{ theme.settings.get('mussdl_product_url', '/')|json_encode|raw }},
+            whatsapp:   {{ theme.settings.get('mussdl_whatsapp', '')|json_encode|raw }}
         };
     </script>
 
