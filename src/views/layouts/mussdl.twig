@@ -55,13 +55,14 @@
 </noscript>
 
 {% hook 'body:start' %}
-{% component 'mussdl.header' %}
+{# Plain includes: Salla's `component` tag only resolves its own groups (header.*, footer.*, home.*). #}
+{% include 'components.mussdl.header' %}
 
 <main id="main-content" role="main">
     {% block content %}{% endblock %}
 </main>
 
-{% component 'mussdl.footer' %}
+{% include 'components.mussdl.footer' %}
 {% hook 'body:end' %}
 
 <salla-add-product-toast data-testid="store-add-product-toast"></salla-add-product-toast>
