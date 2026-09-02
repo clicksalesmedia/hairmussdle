@@ -1,0 +1,9 @@
+{
+  "name": "mussdl-css",
+  "private": true,
+  "description": "Isolated Tailwind v4 build for mussdl.css (Raed's webpack pipeline is Tailwind v3).",
+  "devDependencies": {
+    "@tailwindcss/cli": "^4.1.13",
+    "tailwindcss": "^4.1.13"
+  }
+}

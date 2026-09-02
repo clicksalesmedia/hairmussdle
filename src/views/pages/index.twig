@@ -1,0 +1,345 @@
+{#
+  Home — single-product landing. Editorial copy is the client's approved text
+  and lives here; the merchant-editable pieces (hero words, media, WhatsApp,
+  before/after) come from theme settings (see twilight.json → "إعدادات ثيم مسدل").
+#}
+{% extends "layouts.mussdl" %}
+
+{% set product_url  = theme.settings.get('mussdl_product_url', '/') %}
+{% set hero_title   = theme.settings.get('mussdl_hero_title', 'معزز الشعر') %}
+{% set hero_accent  = theme.settings.get('mussdl_hero_accent', 'بالقرنفل') %}
+{% set hero_text    = theme.settings.get('mussdl_hero_text', 'تركيبة غنية بمزيج من المستخلصات النباتية والزيوت الطبيعية، صممت لدعم صحة فروة الرأس وتحسين مظهر الشعر ليبدو أكثر كثافة وحيوية ولمعانا، مع نعومة أكبر وهيشان أقل.') %}
+{% set hero_still   = theme.settings.get('mussdl_hero_image') ?: 'images/mussdl/hero-woman.webp'|asset %}
+{% set hero_video   = theme.settings.get('mussdl_hero_video') ?: 'video/hero-woman.mp4'|asset %}
+{% set before_img   = theme.settings.get('mussdl_before_image') ?: 'images/mussdl/before.webp'|asset %}
+{% set after_img    = theme.settings.get('mussdl_after_image')  ?: 'images/mussdl/after.webp'|asset %}
+{% set whatsapp     = theme.settings.get('mussdl_whatsapp') ?: store.contacts.whatsapp %}
+{% set price_label  = theme.settings.get('mussdl_hero_price', '') %}
+
+{% set benefits = [
+  { num: '٠١', title: 'مظهر أكثر كثافة وحيوية', body: 'يساعد على تحسين مظهر الشعر ليبدو أكثر كثافة وحيوية مع الاستخدام المنتظم.', out: 'زيت القرنفل العطري، إكليل الجبل، ذيل الحصان' },
+  { num: '٠٢', title: 'تغذية فروة الرأس',        body: 'يدعم تغذية فروة الرأس والعناية بها، لتكون بيئة أفضل للشعر.',              out: 'عرق السوس، الأملج، الكركديه' },
+  { num: '٠٣', title: 'لمعان طبيعي وهيشان أقل',   body: 'يساهم في تقليل الهيشان وتعزيز اللمعان الطبيعي للخصلات.',                  out: 'زيت السمسم، زيت اللوز الحلو، فيتامين هـ' },
+  { num: '٠٤', title: 'نعومة وسهولة تصفيف',       body: 'يساعد على تنعيم الشعر وتسهيل تصفيفه من دون إثقال.',                        out: 'زيت جوز الهند، زيت الخروع، بروتين الغليكول' }
+] %}
+{% set ingredients = [
+  { name: 'زيت القرنفل العطري', role: 'المكون البطل',   image: 'ing-clove',    body: 'قوة القرنفل التي يقوم عليها المنتج، مدعومة بمزيج من الزيوت والمستخلصات النباتية.' },
+  { name: 'إكليل الجبل',        role: 'مستخلص الأوراق', image: 'ing-rosemary', body: 'مستخلص عشبي كلاسيكي في العناية بفروة الرأس، يكمل عمل القرنفل في التركيبة.' },
+  { name: 'الكركديه',           role: 'مستخلص الزهرة',  image: 'ing-hibiscus', body: 'زهرة غنية بالمركبات النباتية، تدخل في العناية بالخصلات ومظهرها.' },
+  { name: 'الأملج',             role: 'مستخلص الثمار',  image: 'ing-amla',     body: 'ثمرة معروفة في تقاليد العناية بالشعر، تضاف لدعم روتين الفروة.' },
+  { name: 'زيت الخروع',         role: 'زيت نباتي',      image: 'ing-castor',   body: 'زيت كثيف يساعد على منح الخصلات ملمسا أنعم ومظهرا أكثر امتلاء.' },
+  { name: 'زيت اللوز الحلو',    role: 'زيت نباتي',      image: 'ing-almond',   body: 'زيت خفيف يسهم في النعومة واللمعان الطبيعي من دون إثقال الشعر.' }
+] %}
+{% set full_ingredients = ['مستخلص عرق السوس', 'مستخلص زهرة الكركديه', 'زيت السمسم', 'زيت الخروع', 'زيت اللوز الحلو', 'مستخلص أوراق إكليل الجبل', 'مستخلص بذور الكرز', 'مستخلص أوراق الحناء', 'مستخلص ثمار الأملج', 'مستخلص ذيل الحصان', 'زيت القرنفل العطري', 'بروتين الغليكول', 'توكوفيرول (فيتامين هـ)', 'زيت جوز الهند'] %}
+{% set steps = [
+  { num: 'الخطوة ٠١', title: 'رجي العبوة جيدا', body: 'رجي العبوة قبل كل استخدام حتى تمتزج الزيوت والمستخلصات جيدا.',                                   time: '١٠ ثوان' },
+  { num: 'الخطوة ٠٢', title: 'وزعي ودلكي بلطف', body: 'وزعي كمية مناسبة على فروة الرأس والشعر، ودلكي الفروة بأطراف أصابعك بحركات دائرية لطيفة.',       time: 'دقيقتان' },
+  { num: 'الخطوة ٠٣', title: 'اتركيه ثم اغسليه', body: 'اتركيه من ساعة إلى ثلاث ساعات، ثم اغسلي الشعر جيدا. كرري من مرتين إلى ثلاث مرات أسبوعيا.', time: '١–٣ ساعات' }
+] %}
+{% set promises = [
+  { t: '١٤ مكونا طبيعيا',       b: 'مزيج من المستخلصات النباتية والزيوت الطبيعية المختارة، بقائمة مكونات معلنة بالكامل.' },
+  { t: 'قوة القرنفل في كل عبوة', b: 'زيت القرنفل العطري مدعوم بإكليل الجبل والأملج والكركديه وزيوت طبيعية غنية.' },
+  { t: 'تصنيع سعودي',           b: 'تركيبة طورت وصنعت في معمل سعودي وبمعايير ثابتة.' },
+  { t: 'إرجاع مجاني ١٤ يوما',   b: 'غيرت رأيك قبل فتح العبوة؟ الإرجاع مجاني وبخطوات بسيطة.' }
+] %}
+{% set faqs = [
+  { q: 'لمن يناسب هذا المنتج؟', a: 'للشعر الخفيف أو الباهت، والشعر الجاف والمتطاير، ولكل من تحتاج إلى عناية وتغذية إضافية، وللباحثات عن تركيبة غنية بالمستخلصات والزيوت الطبيعية.' },
+  { q: 'كيف أستخدمه؟ وهل يحتاج إلى شطف؟', a: 'نعم. رجي العبوة جيدا، ووزعي كمية مناسبة على فروة الرأس والشعر مع التدليك بلطف، ثم اتركيه من ساعة إلى ثلاث ساعات واغسليه جيدا.' },
+  { q: 'كم مرة أستخدمه في الأسبوع؟', a: 'للحصول على أفضل النتائج، استخدميه من مرتين إلى ثلاث مرات أسبوعيا مع الانتظام.' },
+  { q: 'متى يمكنني ملاحظة الفرق؟', a: 'يختلف ذلك بحسب طبيعة الشعر والالتزام بالروتين. مع الاستخدام المنتظم يبدو الشعر تدريجيا أكثر نعومة ولمعانا وحيوية.' },
+  { q: 'ما المكونات الرئيسية؟', a: 'مزيج من ١٤ مكونا: زيت القرنفل العطري، ومستخلصات عرق السوس والكركديه وإكليل الجبل وبذور الكرز والحناء والأملج وذيل الحصان، وزيوت السمسم والخروع واللوز الحلو وجوز الهند، مع بروتين الغليكول وفيتامين هـ.' }
+] %}
+
+{% block content %}
+
+  {# ============================ HERO ============================ #}
+  <section class="relative overflow-hidden" data-hero>
+    <span class="pointer-events-none absolute -top-2 left-1/2 -translate-x-1/2 select-none font-display text-[26vw] leading-none tracking-[.06em] text-olive/[.055] lg:text-[19vw]" aria-hidden="true">MUSSDL</span>
+    <span class="pointer-events-none absolute top-[6%] right-[58%] h-[52vw] w-[52vw] max-h-[620px] max-w-[620px] -translate-y-6 rounded-full opacity-70 blur-3xl lg:right-[52%]"
+          style="background: radial-gradient(circle, rgba(246,239,216,.9), rgba(246,239,216,0) 70%)" aria-hidden="true"></span>
+
+    <div class="shell relative grid items-center gap-10 pt-6 pb-16 sm:pt-10 lg:grid-cols-[.92fr_1.08fr] lg:gap-16 lg:pt-12 lg:pb-24">
+
+      <div class="relative order-1 lg:order-none" data-reveal="scale" data-reveal-duration="1200">
+        <figure class="relative mx-auto w-[min(74vw,392px)] lg:w-[min(34vw,430px)]">
+          <span class="pointer-events-none absolute -inset-x-7 -top-9 bottom-6 rounded-t-full border border-gold/45" aria-hidden="true"></span>
+          <span class="pointer-events-none absolute left-1/2 top-[42%] h-[112%] w-[112%] -translate-x-1/2 -translate-y-1/2 rounded-full border border-dashed border-olive/15" style="animation: var(--animate-spin-slow)" aria-hidden="true"></span>
+
+          <div class="relative overflow-hidden rounded-t-[999px] rounded-b-[26px] bg-shell shadow-[0_40px_90px_-46px_rgba(60,65,74,.65)]">
+            <img src="{{ hero_still }}" width="720" height="960" fetchpriority="high" decoding="async"
+                 alt="امرأة بشعر طويل صحي تحمل عبوة معزز الشعر بالقرنفل من مسدل وتبتسم" class="w-full object-cover" data-hero-still/>
+            {% if theme.settings.get('mussdl_show_video', true) %}
+              <video class="absolute inset-0 h-full w-full object-cover opacity-0 transition-opacity duration-700"
+                     muted playsinline preload="none" aria-hidden="true" width="720" height="960" data-hero-video>
+                <source src="{{ hero_video }}" type="video/mp4"/>
+              </video>
+            {% endif %}
+          </div>
+
+          <span class="pointer-events-none absolute -inset-x-7 bottom-6 h-px bg-gradient-to-l from-transparent via-gold/70 to-transparent" aria-hidden="true"></span>
+
+          {% if price_label %}
+            <figcaption class="absolute bottom-1 right-[-10px] flex items-center gap-3 rounded-2xl border border-ink/8 bg-shell/95 px-4 py-2.5 shadow-[0_18px_44px_-22px_rgba(60,65,74,.6)] backdrop-blur sm:right-[-28px]"
+                        style="animation: var(--animate-float)">
+              <span class="num flex h-9 w-9 items-center justify-center rounded-full bg-olive text-[12px] text-gold">١٥٠</span>
+              <span class="block text-right leading-tight">
+                <span class="block text-[11px] text-ink-soft">العبوة ١٥٠ مل</span>
+                <span class="num block text-[15px] font-semibold text-olive">{{ price_label }}</span>
+              </span>
+            </figcaption>
+          {% endif %}
+        </figure>
+      </div>
+
+      <div class="order-2 lg:order-none" data-stagger="95">
+        <h1 class="h-display text-hero-line whitespace-nowrap text-olive">
+          <span class="inline-block overflow-hidden align-bottom"><span class="inline-block" data-reveal="mask" data-reveal-duration="1000">{{ hero_title }}</span></span>
+          <span class="inline-block overflow-hidden align-bottom"><span class="inline-block font-light text-gold-ink" data-reveal="mask" data-reveal-duration="1000" data-reveal-delay="110">{{ hero_accent }}</span></span>
+        </h1>
+        <p class="mt-6 max-w-[46ch] text-[15px] leading-[1.95] text-ink sm:text-[17px]" data-reveal="up">{{ hero_text }}</p>
+        <div class="mt-9 flex flex-col gap-3 sm:flex-row sm:items-center" data-reveal="up">
+          <a href="{{ product_url }}" class="btn-primary">اكتشفي المنتج</a>
+          <a href="#results" class="btn-outline">ماذا تتوقعين مع الاستمرار؟</a>
+        </div>
+        <dl class="mt-11 grid max-w-xl grid-cols-3 divide-x divide-x-reverse divide-ink/12 border-t border-ink/12 pt-6" data-stagger="115" data-reveal="up">
+          <div class="pl-4 sm:pl-6">
+            <dt class="num h-display text-[28px] leading-none text-olive sm:text-[34px]" data-count-to="14" data-count-suffix=" مكونا"></dt>
+            <dd class="mt-1.5 text-[11px] leading-snug text-ink-soft sm:text-xs">مستخلصات نباتية وزيوت طبيعية</dd>
+          </div>
+          <div class="px-4 sm:px-6">
+            <dt class="num h-display text-[28px] leading-none text-olive sm:text-[34px]" data-count-to="3" data-count-suffix=" ساعات"></dt>
+            <dd class="mt-1.5 text-[11px] leading-snug text-ink-soft sm:text-xs">مدة الترك القصوى قبل الغسل</dd>
+          </div>
+          <div class="pr-4 sm:pr-6">
+            <dt class="num h-display text-[28px] leading-none text-olive sm:text-[34px]" data-count-to="3" data-count-suffix="× أسبوعيا"></dt>
+            <dd class="mt-1.5 text-[11px] leading-snug text-ink-soft sm:text-xs">من مرتين إلى ثلاث مرات للاستخدام</dd>
+          </div>
+        </dl>
+      </div>
+    </div>
+
+    <span class="pointer-events-none absolute bottom-24 left-4 hidden select-none text-[10px] tracking-[.42em] text-ink-soft/60 xl:block" style="writing-mode: vertical-rl" aria-hidden="true">HERBAL SCALP &amp; HAIR CARE</span>
+    <div class="pointer-events-none flex justify-center pb-2" aria-hidden="true">
+      <span class="block h-8 w-px bg-gradient-to-b from-transparent via-olive/50 to-transparent" style="animation: var(--animate-cue)"></span>
+    </div>
+  </section>
+
+  {# ============================ MARQUEE ============================ #}
+  <div class="marquee mt-4 overflow-hidden border-y border-ink/10 bg-olive py-3.5 sm:py-4">
+    <div class="marquee-track">
+      <div class="flex shrink-0 items-center gap-8 pl-8" data-marquee-set>
+        {% for item in ['توصيل ١–٣ أيام داخل المملكة', 'الدفع عند الاستلام متاح', 'مستخلصات نباتية وزيوت طبيعية', 'إرجاع مجاني خلال ١٤ يوما', 'صناعة سعودية'] %}
+          <span class="text-[13px] text-cream/85 sm:text-sm">{{ item }}</span>
+          <span class="{{ loop.index is odd ? 'text-gold' : 'text-mist' }}">◆</span>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+
+  {# ============================ BENEFITS ============================ #}
+  <section id="benefits" class="shell scroll-mt-24 pt-16 sm:pt-24">
+    <header class="max-w-2xl" data-stagger="80">
+      <span class="eyebrow" data-reveal="down">لماذا مسدل؟</span>
+      <h2 class="h-display text-sect mt-3 text-olive" data-reveal="up">عناية متوازنة في خطوة واحدة</h2>
+      <p class="mt-3 text-[15px] leading-relaxed text-ink-soft sm:text-[16px]" data-reveal="up">ركزنا على تركيبة واحدة سهلة الاستخدام، لتدعم فروة الرأس وتمنح الشعر عناية يومية من دون تعقيد.</p>
+    </header>
+    <ul class="mt-8 grid grid-cols-2 gap-3 sm:mt-10 sm:gap-4 lg:grid-cols-4" data-stagger="90">
+      {% for b in benefits %}
+        <li class="card card-hover flex h-full flex-col p-5" data-reveal="up">
+          <span class="num h-display text-[30px] leading-none text-gold-ink">{{ b.num }}</span>
+          <h3 class="mt-3 text-[16px] font-medium text-olive">{{ b.title }}</h3>
+          <p class="mt-1.5 text-[13.5px] leading-relaxed text-ink-soft">{{ b.body }}</p>
+          <p class="mt-3 border-t border-ink/10 pt-3 text-[12.5px] leading-relaxed text-mist-ink"><span class="text-ink-soft">مدعوم بـ</span> {{ b.out }}</p>
+        </li>
+      {% endfor %}
+    </ul>
+    <p class="mt-6 text-[14px] text-ink-soft" data-reveal="up">يمنح الشعر مظهرا صحيا ومتجددا مع الاستخدام المنتظم.</p>
+  </section>
+
+  {# ============================ PRODUCT CTA ============================ #}
+  <section id="product" class="shell scroll-mt-24 pt-16 sm:pt-24">
+    <div class="card overflow-hidden">
+      <div class="grid lg:grid-cols-2">
+        <div class="relative bg-cream-deep/50 p-4 sm:p-8 lg:p-10">
+          <div class="relative overflow-hidden rounded-[20px] border border-ink/8 bg-shell">
+            <img src="{{ 'images/mussdl/product-real.webp'|asset }}" width="600" height="900" loading="lazy" decoding="async" alt="عبوة معزز الشعر بالقرنفل من مسدل، ١٥٠ مل" class="w-full object-cover" data-hero-shot/>
+          </div>
+          <ul class="mt-3 grid grid-cols-4 gap-2 sm:mt-4 sm:gap-3" data-thumbs>
+            {% for g in ['product-real', 'p-clove-angle', 'p-clove-hand', 'p-clove-detail'] %}
+              <li><button type="button" data-thumb="{{ ('images/mussdl/' ~ g ~ '.webp')|asset }}" class="block w-full overflow-hidden rounded-xl border transition-all duration-300 {{ loop.first ? 'border-gold' : 'border-ink/10 hover:border-gold/50' }}">
+                <img src="{{ ('images/mussdl/' ~ g ~ '.webp')|asset }}" alt="" width="250" height="250" loading="lazy" class="aspect-square w-full object-cover"/></button></li>
+            {% endfor %}
+          </ul>
+        </div>
+        <div class="flex flex-col justify-center p-5 sm:p-8 lg:p-12" data-stagger="80">
+          <span class="eyebrow" data-reveal="down">المنتج</span>
+          <h2 class="h-display mt-2.5 text-[30px] leading-tight text-olive sm:text-[40px]" data-reveal="up">معزز الشعر بالقرنفل</h2>
+          <p class="mt-2 text-[14px] text-ink-soft sm:text-[15px]" data-reveal="up">رذاذ عناية بفروة الرأس والشعر · <span class="num">١٥٠ مل</span></p>
+          <p class="mt-4 max-w-prose text-[15px] leading-[1.9] text-ink" data-reveal="up">يساعد على دعم صحة الفروة وتحسين مظهر الشعر ليبدو أكثر كثافة وحيوية ولمعانا، مع تعزيز النعومة وتقليل الهيشان. يرج جيدا قبل الاستخدام، ويترك من ساعة إلى ثلاث ساعات ثم يغسل.</p>
+          <ul class="mt-5 flex flex-wrap gap-2" data-reveal="up">
+            {% for c in ['الشعر الخفيف أو الباهت', 'الشعر الجاف والمتطاير', 'شعر يحتاج إلى تغذية إضافية', 'مستخلصات نباتية وزيوت طبيعية'] %}
+              <li class="pill border border-gold/45 bg-gold/12 text-gold-ink">{{ c }}</li>
+            {% endfor %}
+          </ul>
+          <div class="mt-7 flex flex-col gap-3 sm:flex-row" data-reveal="up">
+            <a href="{{ product_url }}" class="btn-primary flex-1">اطلبي الآن</a>
+            <a href="{{ product_url }}" class="btn-outline sm:w-auto">كل التفاصيل</a>
+          </div>
+          <p class="mt-4 flex items-start gap-2 text-[12.5px] leading-relaxed text-ink-soft" data-reveal="up">
+            <i class="sicon-shipping-fast mt-0.5 shrink-0 text-gold-ink"></i>
+            <span>توصيل مجاني للطلبات فوق <span class="num">٢٠٠ ر.س</span> · الدفع عند الاستلام متاح</span>
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  {# ============================ INGREDIENTS ============================ #}
+  <section id="ingredients" class="shell scroll-mt-24 pt-16 sm:pt-24">
+    <header class="max-w-2xl" data-stagger="80">
+      <span class="eyebrow" data-reveal="down">المكونات</span>
+      <h2 class="h-display text-sect mt-3 text-olive" data-reveal="up">أربعة عشر مكونا في عبوة واحدة</h2>
+      <p class="mt-3 text-[15px] leading-relaxed text-ink-soft sm:text-[16px]" data-reveal="up">تركيبة غنية بمزيج من المستخلصات النباتية والزيوت الطبيعية المختارة للعناية بفروة الرأس والشعر. هذه أبرز المكونات، والقائمة الكاملة أسفلها.</p>
+    </header>
+    <ul class="mt-8 grid grid-cols-2 gap-3 sm:mt-10 sm:gap-4 lg:grid-cols-3" data-stagger="110">
+      {% for g in ingredients %}
+        <li class="card card-hover group overflow-hidden" data-reveal="up">
+          <div class="overflow-hidden bg-cream-deep/50">
+            <img src="{{ ('images/mussdl/' ~ g.image ~ '.webp')|asset }}" alt="{{ g.name }}" width="900" height="900" loading="lazy" decoding="async"
+                 class="aspect-[4/3] w-full object-cover transition-transform duration-[900ms] ease-[cubic-bezier(.16,1,.3,1)] group-hover:scale-105"/>
+          </div>
+          <div class="p-5">
+            <div class="flex items-baseline justify-between gap-3">
+              <h3 class="h-display text-[22px] text-olive">{{ g.name }}</h3>
+              <span class="pill bg-olive text-gold">{{ g.role }}</span>
+            </div>
+            <p class="mt-2.5 text-[13.5px] leading-relaxed text-ink-soft">{{ g.body }}</p>
+          </div>
+        </li>
+      {% endfor %}
+    </ul>
+    <div class="mt-8 rounded-[var(--radius-card)] border border-mist/40 bg-mist/10 p-5 sm:p-6" data-reveal="up">
+      <p class="text-[12px] font-medium tracking-[.18em] text-mist-ink uppercase">القائمة الكاملة للمكونات</p>
+      <ul class="mt-3 flex flex-wrap gap-2">
+        {% for n in full_ingredients %}<li class="pill border border-mist/50 bg-shell/70 text-ink">{{ n }}</li>{% endfor %}
+      </ul>
+    </div>
+  </section>
+
+  {# ============================ RESULTS ============================ #}
+  <section id="results" class="shell scroll-mt-24 pt-16 sm:pt-24">
+    <div class="grid gap-8 lg:grid-cols-[.85fr_1.15fr] lg:gap-12 lg:items-center">
+      <header data-stagger="80">
+        <span class="eyebrow" data-reveal="down">النتائج</span>
+        <h2 class="h-display text-sect mt-3 text-olive" data-reveal="up">الفرق مع الاستخدام المنتظم</h2>
+        <p class="mt-3 text-[15px] leading-relaxed text-ink-soft sm:text-[16px]" data-reveal="up">اسحبي المقبض لمقارنة الفرق.</p>
+        <dl class="mt-7 grid grid-cols-2 gap-4" data-stagger="110" data-reveal="up">
+          <div class="card p-4"><dt class="num h-display text-[30px] text-olive">١ إلى ٣ ساعات</dt><dd class="mt-1 text-[12px] leading-snug text-ink-soft">مدة الترك على الشعر قبل الغسل</dd></div>
+          <div class="card p-4"><dt class="num h-display text-[30px] text-olive">٢ إلى ٣ مرات</dt><dd class="mt-1 text-[12px] leading-snug text-ink-soft">أسبوعيا للحصول على أفضل النتائج</dd></div>
+        </dl>
+        <p class="mt-3 text-[11px] leading-relaxed text-ink-soft/80">صور توضيحية. تختلف النتائج بحسب طبيعة الشعر والانتظام في الاستخدام.</p>
+      </header>
+      <figure class="relative select-none overflow-hidden rounded-[24px] border border-ink/8 bg-shell shadow-[0_28px_70px_-40px_rgba(60,65,74,.6)] touch-pan-y" data-compare data-reveal="scale" data-reveal-duration="1000">
+        <img src="{{ after_img }}" width="1000" height="1336" loading="lazy" decoding="async" alt="الشعر بعد الاستخدام المنتظم" class="block w-full"/>
+        <div class="absolute inset-y-0 right-0 overflow-hidden" style="width:50%" data-compare-clip>
+          <img src="{{ before_img }}" loading="lazy" decoding="async" alt="الشعر قبل بدء الاستخدام" class="block h-full max-w-none object-cover object-right" data-compare-before/>
+        </div>
+        <span class="pill absolute top-3 right-3 bg-olive text-gold">قبل</span>
+        <span class="pill absolute top-3 left-3 bg-mist-deep text-shell">بعد</span>
+        <div class="absolute inset-y-0 w-px bg-shell/90 shadow-[0_0_14px_rgba(0,0,0,.28)]" style="right:50%" data-compare-handle>
+          <button type="button" data-compare-grip aria-label="اسحبي للمقارنة" class="absolute top-1/2 right-1/2 flex h-11 w-11 translate-x-1/2 -translate-y-1/2 cursor-ew-resize items-center justify-center rounded-full border border-ink/10 bg-shell text-olive shadow-lg transition-transform duration-300 hover:scale-110"><span class="text-[13px] tracking-tighter">‹›</span></button>
+        </div>
+      </figure>
+    </div>
+  </section>
+
+  {# ============================ RITUAL ============================ #}
+  <section id="ritual" class="shell scroll-mt-24 pt-16 sm:pt-24">
+    <header class="max-w-xl" data-stagger="80">
+      <span class="eyebrow" data-reveal="down">طريقة الاستخدام</span>
+      <h2 class="h-display text-sect mt-3 text-olive" data-reveal="up">ثلاث خطوات، من مرتين إلى ثلاث مرات أسبوعيا</h2>
+    </header>
+    <ol class="mt-8 grid gap-4 sm:mt-10 sm:grid-cols-3" data-stagger="120">
+      {% for s in steps %}
+        <li class="card flex h-full flex-col p-6" data-reveal="up">
+          <span class="eyebrow">{{ s.num }}</span>
+          <h3 class="mt-3 text-[18px] font-medium text-olive">{{ s.title }}</h3>
+          <p class="mt-2 flex-1 text-[13.5px] leading-relaxed text-ink-soft">{{ s.body }}</p>
+          <span class="num mt-4 inline-flex w-fit items-center gap-1.5 rounded-full bg-mist/20 px-3 py-1 text-[12px] text-mist-ink">{{ s.time }}</span>
+        </li>
+      {% endfor %}
+    </ol>
+  </section>
+
+  {# ============================ ABOUT ============================ #}
+  <section id="about" class="shell scroll-mt-24 pt-16 sm:pt-24">
+    <div class="card grid overflow-hidden lg:grid-cols-2">
+      <div class="relative min-h-[260px] lg:min-h-full">
+        <img src="{{ 'images/mussdl/story.webp'|asset }}" width="1200" height="900" loading="lazy" decoding="async" alt="معمل مسدل" class="absolute inset-0 h-full w-full object-cover"/>
+      </div>
+      <div class="p-6 sm:p-9 lg:p-12" data-stagger="80">
+        <span class="eyebrow" data-reveal="down">عن مسدل</span>
+        <h2 class="h-display mt-3 text-[26px] leading-snug text-olive sm:text-[34px]" data-reveal="up">وصفة عائلية، أعيدت صياغتها في معمل سعودي</h2>
+        <p class="mt-4 text-[15px] leading-[1.9] text-ink" data-reveal="up">بدأت مسدل من وصفات عائلية بالقرنفل والزيوت الطبيعية، ثم طورناها لتصبح سهلة الاستخدام في يومك. نجمع بين الأمان، التغذية العميقة، والبساطة الراقية.</p>
+        <ul class="mt-6 flex flex-wrap gap-2" data-reveal="up">
+          {% for c in ['معمل سعودي', 'خال من القسوة على الحيوان', 'قوة القرنفل'] %}<li class="pill bg-cream-deep/70 text-olive">{{ c }}</li>{% endfor %}
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  {# ============================ PROMISE BAND ============================ #}
+  <section class="relative mt-16 overflow-hidden bg-mist-deep sm:mt-24">
+    <img src="{{ 'images/mussdl/logo-cream.webp'|asset }}" alt="" width="644" height="200" loading="lazy" aria-hidden="true" class="pointer-events-none absolute -left-10 top-1/2 w-[420px] -translate-y-1/2 opacity-[.06]"/>
+    <span class="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-l from-transparent via-mist to-transparent" aria-hidden="true"></span>
+    <div class="shell relative py-14 sm:py-20">
+      <header class="max-w-2xl" data-stagger="80">
+        <span class="inline-flex items-center gap-2 text-[11px] font-medium tracking-[.22em] text-mist uppercase sm:text-xs" data-reveal="down">وعد مسدل</span>
+        <h2 class="h-display text-sect mt-3 text-shell" data-reveal="up">أربعة أشياء لن نساوم عليها</h2>
+      </header>
+      <ul class="mt-8 grid grid-cols-2 gap-3 sm:mt-12 sm:gap-4 lg:grid-cols-4" data-stagger="100">
+        {% for pr in promises %}
+          <li class="rounded-2xl border border-mist/30 bg-shell/[.06] p-5 backdrop-blur-[2px]" data-reveal="up">
+            <span class="num h-display block text-[26px] leading-none text-mist">٠{{ loop.index }}</span>
+            <h3 class="mt-3 text-[15px] font-medium text-shell">{{ pr.t }}</h3>
+            <p class="mt-1.5 text-[13px] leading-relaxed text-shell/70">{{ pr.b }}</p>
+          </li>
+        {% endfor %}
+      </ul>
+    </div>
+  </section>
+
+  {# ============================ FAQ ============================ #}
+  <section class="shell pt-16 pb-20 sm:pt-24 sm:pb-28">
+    <div class="mx-auto max-w-3xl">
+      <header class="text-center" data-stagger="80">
+        <span class="eyebrow" data-reveal="down">الأسئلة الشائعة</span>
+        <h2 class="h-display text-sect mt-3 text-olive" data-reveal="up">إجابات واضحة قبل أن تطلبي</h2>
+      </header>
+      <div class="mt-8 divide-y divide-ink/12 border-y border-ink/12 sm:mt-10" data-stagger="70">
+        {% for f in faqs %}
+          <details class="group py-4" data-reveal="up" {{ loop.first ? 'open' : '' }}>
+            <summary class="flex cursor-pointer list-none items-center justify-between gap-4 text-[15px] font-medium text-olive marker:hidden sm:text-[16px]">
+              {{ f.q }}
+              <span class="flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-ink/15 text-ink-soft transition-transform duration-300 group-open:rotate-45">+</span>
+            </summary>
+            <p class="mt-3 max-w-prose text-[14px] leading-[1.9] text-ink-soft">{{ f.a }}</p>
+          </details>
+        {% endfor %}
+      </div>
+      {% if whatsapp %}
+        <aside class="mt-10 flex flex-col items-center gap-4 rounded-[var(--radius-card)] border border-mist/50 bg-mist/15 p-6 text-center sm:mt-12 sm:flex-row sm:p-7 sm:text-right" data-reveal="up">
+          <span class="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-mist-deep text-shell"><i class="sicon-whatsapp text-xl"></i></span>
+          <div class="flex-1">
+            <h3 class="text-[16px] font-medium text-mist-ink">لم تجدي إجابتك؟</h3>
+            <p class="mt-1 text-[13.5px] leading-relaxed text-ink-soft">فريقنا يرد على استفساراتك عن المنتج والطلبات.</p>
+          </div>
+          <a href="https://wa.me/{{ whatsapp|replace({' ': '', '+': '', '-': ''}) }}" target="_blank" rel="noopener"
+             class="btn inline-flex shrink-0 bg-mist-deep text-shell shadow-[0_10px_30px_-12px_rgba(65,86,95,.8)] hover:translate-y-[-2px] hover:bg-[#374a52]">راسلينا على واتساب</a>
+        </aside>
+      {% endif %}
+    </div>
+  </section>
+
+  {% hook 'home:end' %}
+{% endblock %}

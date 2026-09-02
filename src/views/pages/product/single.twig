@@ -1,0 +1,259 @@
+{#
+  Product page — Mussdl design over Salla's live product data.
+  Gallery, price, options (pack sizes are a Salla option), quantity and
+  add-to-cart all come from the platform; the editorial sections below are the
+  client's approved copy.
+#}
+{% extends "layouts.mussdl" %}
+
+{% set benefits = [
+  { num: '٠١', title: 'مظهر أكثر كثافة وحيوية', body: 'يساعد على تحسين مظهر الشعر ليبدو أكثر كثافة وحيوية مع الاستخدام المنتظم.', out: 'زيت القرنفل العطري، إكليل الجبل، ذيل الحصان' },
+  { num: '٠٢', title: 'تغذية فروة الرأس',        body: 'يدعم تغذية فروة الرأس والعناية بها، لتكون بيئة أفضل للشعر.',              out: 'عرق السوس، الأملج، الكركديه' },
+  { num: '٠٣', title: 'لمعان طبيعي وهيشان أقل',   body: 'يساهم في تقليل الهيشان وتعزيز اللمعان الطبيعي للخصلات.',                  out: 'زيت السمسم، زيت اللوز الحلو، فيتامين هـ' },
+  { num: '٠٤', title: 'نعومة وسهولة تصفيف',       body: 'يساعد على تنعيم الشعر وتسهيل تصفيفه من دون إثقال.',                        out: 'زيت جوز الهند، زيت الخروع، بروتين الغليكول' }
+] %}
+{% set ingredients = [
+  { name: 'زيت القرنفل العطري', role: 'المكون البطل',   image: 'ing-clove',    body: 'قوة القرنفل التي يقوم عليها المنتج، مدعومة بمزيج من الزيوت والمستخلصات النباتية.' },
+  { name: 'إكليل الجبل',        role: 'مستخلص الأوراق', image: 'ing-rosemary', body: 'مستخلص عشبي كلاسيكي في العناية بفروة الرأس، يكمل عمل القرنفل في التركيبة.' },
+  { name: 'الكركديه',           role: 'مستخلص الزهرة',  image: 'ing-hibiscus', body: 'زهرة غنية بالمركبات النباتية، تدخل في العناية بالخصلات ومظهرها.' },
+  { name: 'الأملج',             role: 'مستخلص الثمار',  image: 'ing-amla',     body: 'ثمرة معروفة في تقاليد العناية بالشعر، تضاف لدعم روتين الفروة.' },
+  { name: 'زيت الخروع',         role: 'زيت نباتي',      image: 'ing-castor',   body: 'زيت كثيف يساعد على منح الخصلات ملمسا أنعم ومظهرا أكثر امتلاء.' },
+  { name: 'زيت اللوز الحلو',    role: 'زيت نباتي',      image: 'ing-almond',   body: 'زيت خفيف يسهم في النعومة واللمعان الطبيعي من دون إثقال الشعر.' }
+] %}
+{% set full_ingredients = 'مستخلص عرق السوس، مستخلص زهرة الكركديه، زيت السمسم، زيت الخروع، زيت اللوز الحلو، مستخلص أوراق إكليل الجبل، مستخلص بذور الكرز، مستخلص أوراق الحناء، مستخلص ثمار الأملج، مستخلص ذيل الحصان، زيت القرنفل العطري، بروتين الغليكول، توكوفيرول (فيتامين هـ)، زيت جوز الهند.' %}
+{% set steps = [
+  { num: 'الخطوة ٠١', title: 'رجي العبوة جيدا', body: 'رجي العبوة قبل كل استخدام حتى تمتزج الزيوت والمستخلصات جيدا.',                                   time: '١٠ ثوان' },
+  { num: 'الخطوة ٠٢', title: 'وزعي ودلكي بلطف', body: 'وزعي كمية مناسبة على فروة الرأس والشعر، ودلكي الفروة بأطراف أصابعك بحركات دائرية لطيفة.',       time: 'دقيقتان' },
+  { num: 'الخطوة ٠٣', title: 'اتركيه ثم اغسليه', body: 'اتركيه من ساعة إلى ثلاث ساعات، ثم اغسلي الشعر جيدا. كرري من مرتين إلى ثلاث مرات أسبوعيا.', time: '١–٣ ساعات' }
+] %}
+{% set details = [
+  { t: 'طريقة الاستخدام', b: 'يرج جيدا قبل الاستخدام، ثم توزع كمية مناسبة على فروة الرأس والشعر مع التدليك بلطف. يترك من ساعة إلى ثلاث ساعات ثم يغسل جيدا. للحصول على أفضل النتائج يستخدم من مرتين إلى ثلاث مرات أسبوعيا.' },
+  { t: 'المكونات الكاملة', b: full_ingredients },
+  { t: 'مناسب لمن؟', b: 'الشعر الخفيف أو الباهت، والشعر الجاف والمتطاير، والشعر الذي يحتاج إلى عناية وتغذية إضافية، وللباحثات عن تركيبة غنية بالمستخلصات والزيوت الطبيعية.' }
+] %}
+{% set whatsapp = theme.settings.get('mussdl_whatsapp') ?: store.contacts.whatsapp %}
+
+{% block body_class %}pb-24 lg:pb-0{% endblock %}
+
+{% block content %}
+<div class="shell pt-6 sm:pt-8">
+
+  <nav class="mb-5 text-[12.5px] text-ink-soft sm:mb-7" aria-label="مسار التنقل"><salla-breadcrumb></salla-breadcrumb></nav>
+  <div class="s-blocks-wrapper">{% hook 'product.single.before_product_info' %}</div>
+
+  {# ============================ BUY BLOCK ============================ #}
+  <div class="grid gap-8 lg:grid-cols-2 lg:gap-14" id="product-{{ product.id }}" data-buy-block>
+
+    {# Gallery #}
+    <div class="lg:sticky lg:top-24 lg:self-start" data-reveal="scale" data-reveal-duration="900">
+      <figure class="relative overflow-hidden rounded-[26px] border border-ink/8 bg-shell shadow-[0_28px_70px_-42px_rgba(60,65,74,.6)]">
+        {% if product.promotion_title %}<span class="pill absolute top-3 right-3 z-[2] bg-olive text-gold">{{ product.promotion_title }}</span>{% endif %}
+        <img src="{{ product.image.url }}" width="1000" height="1000" fetchpriority="high" decoding="async"
+             alt="{{ product.image.alt ?: product.name }}" class="w-full object-cover" data-main-shot/>
+      </figure>
+      {% if product.images|length > 1 %}
+        <ul class="mt-3 grid grid-cols-4 gap-2 sm:mt-4 sm:gap-3" data-thumbs>
+          {% for image in product.images %}
+            <li><button type="button" data-thumb="{{ image.url }}" aria-label="{{ image.alt ?: product.name }}"
+                        class="block w-full overflow-hidden rounded-xl border transition-all duration-300 {{ loop.first ? 'border-gold' : 'border-ink/10 hover:border-gold/50' }}">
+              <img src="{{ image.url }}" alt="" width="250" height="250" loading="lazy" decoding="async" class="aspect-square w-full object-cover"/></button></li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+    </div>
+
+    {# Detail #}
+    <div data-stagger="80">
+      {% hook 'product:single.description.start' %}
+
+      <div class="flex flex-wrap items-center gap-3" data-reveal="down">
+        {% if product.discount_percentage %}<span class="pill bg-olive text-gold num">وفري {{ product.discount_percentage }}</span>{% endif %}
+        {% if product.rating %}
+          <salla-rating-stars data-testid="store-product-rating" value="{{ product.rating.stars }}" reviews="{{ product.rating.count }}"></salla-rating-stars>
+        {% endif %}
+      </div>
+
+      <h1 data-testid="store-product-title" class="h-display mt-3 text-[32px] leading-tight text-olive sm:text-[46px]" data-reveal="up">{{ product.name }}</h1>
+      {% if product.subtitle %}<p class="mt-2 text-[14px] text-ink-soft sm:text-[15px]" data-reveal="up">{{ product.subtitle }}</p>{% endif %}
+
+      {# Price #}
+      <div data-testid="store-product-price" class="mt-4 flex flex-wrap items-baseline gap-3" data-reveal="up">
+        <div class="price-wrapper flex items-baseline gap-3">
+          <div class="price_is_on_sale {{ product.is_on_sale ? '' : 'hidden' }} flex items-baseline gap-3">
+            <span class="total-price num text-[26px] font-semibold text-olive">{{ product.sale_price|money }}</span>
+            <span class="before-price num text-[14px] text-ink-soft line-through">{{ product.regular_price|money }}</span>
+          </div>
+          <div class="starting-or-normal-price {{ product.is_on_sale ? 'hidden' : 'flex' }} items-baseline gap-2">
+            {% if product.starting_price %}<span class="starting-price-title text-[13px] text-ink-soft">{{ trans('pages.products.starting_price') }}</span>{% endif %}
+            <span class="total-price num text-[26px] font-semibold text-olive">{{ product.starting_price ? product.starting_price|money : product.price|money }}</span>
+          </div>
+        </div>
+        {% if product.is_taxable %}<small class="text-[11px] text-ink-soft">{{ trans('pages.products.tax_included') }}</small>{% endif %}
+        <div data-testid="store-product-out-of-stock" class="out-of-stock hidden text-[14px] font-semibold text-red-700">{{ trans('pages.products.out_of_stock') }}</div>
+      </div>
+
+      {# Description from the store (merchant pastes the approved copy here) #}
+      <div data-testid="store-product-description" class="mt-4 max-w-prose text-[15px] leading-[1.9] text-ink [&_p]:mb-3 [&_ul]:list-disc [&_ul]:pr-5" data-reveal="up">
+        {{ product.description|replace({"&nbsp;": "\n"})|raw }}
+      </div>
+
+      <ul class="mt-5 flex flex-wrap gap-2" data-reveal="up">
+        {% for c in ['الشعر الخفيف أو الباهت', 'الشعر الجاف والمتطاير', 'شعر يحتاج إلى تغذية إضافية'] %}
+          <li class="pill border border-gold/45 bg-gold/12 text-gold-ink">{{ c }}</li>
+        {% endfor %}
+      </ul>
+
+      {% hook 'product:single.description' %}
+      <salla-installment data-testid="store-product-installment" price="{{ product.price }}" class="mt-4 block"></salla-installment>
+
+      {# ---------- Salla add-to-cart form ---------- #}
+      <form data-testid="store-product-form" class="form product-form mt-8" enctype="multipart/form-data" method="post"
+            onsubmit="return salla.form.onSubmit('cart.addItem', event)" data-reveal="up">
+        <input type="hidden" name="id" value="{{ product.id }}">
+        {% hook 'product:single.form.start' %}
+
+        {# Options — e.g. the pack size (عبوة / عبوتان / ثلاث) configured in the dashboard #}
+        <div class="mussdl-options">
+          {% include 'pages.partials.product.options' %}
+        </div>
+
+        {% hook 'product:single.form.end' %}
+
+        <div class="mt-6 flex flex-wrap items-stretch gap-3">
+          {% if product.is_hidden_quantity or product.type == 'booking' %}
+            <input type="hidden" value="1" name="quantity" aria-label="Quantity"/>
+          {% else %}
+            <salla-quantity-input data-testid="store-product-quantity" max="{{ product.max_quantity }}" value="1" name="quantity" aria-label="الكمية"
+                                  class="rounded-full border border-ink/15 bg-shell/70"></salla-quantity-input>
+          {% endif %}
+
+          <salla-add-product-button
+              data-testid="store-product-add-to-cart"
+              {{ product.can_quick_buy ? 'quick-buy' : '' }}
+              support-sticky-bar
+              {{ product.is_require_shipping ? 'required-shipping' : '' }}
+              {{ product.has_preorder_campaign ? 'has-pre-order' : '' }}
+              amount="{{ product.base_currency_price }}"
+              class="min-w-[200px] flex-1"
+              product-status="{{ product.status }}"
+              product-type="{{ product.type }}"
+              product-id="{{ product.id }}"
+              loader-position="end"
+              type="submit"
+              width="wide"
+              {% if product.notify_availability %}
+                {{ product.notify_availability.subscribed ? 'is-subscribed' : '' }}
+                channels="{{ product.notify_availability.channels|join(',') }}"
+                subscribed-options="{{ product.notify_availability.subscribed_options|json_encode }}"
+              {% endif %}>
+            <span>{{ product.add_to_cart_label }}</span>
+          </salla-add-product-button>
+        </div>
+      </form>
+
+      {# Reassurance #}
+      <ul class="mt-6 grid gap-2.5 border-t border-ink/12 pt-6 text-[13px] text-ink-soft" data-reveal="up">
+        <li class="flex items-start gap-2.5"><i class="sicon-shipping-fast mt-0.5 shrink-0 text-gold-ink"></i><span>توصيل ١–٣ أيام داخل المملكة، مجاني فوق ٢٠٠ ر.س</span></li>
+        <li class="flex items-start gap-2.5"><i class="sicon-lock mt-0.5 shrink-0 text-gold-ink"></i><span>دفع آمن، والدفع عند الاستلام متاح في المدن الرئيسية</span></li>
+        <li class="flex items-start gap-2.5"><i class="sicon-check-circle mt-0.5 shrink-0 text-gold-ink"></i><span>إرجاع مجاني خلال ١٤ يوما إن لم تفتح العبوة</span></li>
+      </ul>
+
+      {# Accordion #}
+      <div class="mt-8 divide-y divide-ink/12 border-y border-ink/12" id="how">
+        {% for d in details %}
+          <details class="group py-4" {{ loop.first ? 'open' : '' }}>
+            <summary class="flex cursor-pointer list-none items-center justify-between gap-4 text-[15px] font-medium text-olive marker:hidden">
+              {{ d.t }}<span class="flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-ink/15 text-ink-soft transition-transform duration-300 group-open:rotate-45">+</span>
+            </summary>
+            <p class="mt-3 max-w-prose text-[14px] leading-[1.9] text-ink-soft">{{ d.b }}</p>
+          </details>
+        {% endfor %}
+      </div>
+
+      <div class="mt-5 flex items-center gap-3">
+        <salla-social-share data-testid="store-product-social-share" class="inline-flex"></salla-social-share>
+        <salla-button data-testid="store-product-wishlist-btn" class="btn--wishlist" data-id="{{ product.id }}"
+                      onclick="salla.wishlist.toggle('{{ product.id }}')" shape="icon" fill="outline" color="light" aria-label="add to wishlist">
+          <i class="sicon-heart"></i>
+        </salla-button>
+      </div>
+    </div>
+  </div>
+
+  {# ============================ BENEFITS ============================ #}
+  <section class="pt-16 sm:pt-24">
+    <header class="max-w-2xl" data-stagger="80">
+      <span class="eyebrow" data-reveal="down">لماذا مسدل؟</span>
+      <h2 class="h-display text-sect mt-3 text-olive" data-reveal="up">ما الذي تضيفه هذه العبوة إلى روتينك؟</h2>
+    </header>
+    <ul class="mt-8 grid grid-cols-2 gap-3 sm:mt-10 sm:gap-4 lg:grid-cols-4" data-stagger="90">
+      {% for b in benefits %}
+        <li class="card card-hover flex h-full flex-col p-5" data-reveal="up">
+          <span class="num h-display text-[30px] leading-none text-gold-ink">{{ b.num }}</span>
+          <h3 class="mt-3 text-[16px] font-medium text-olive">{{ b.title }}</h3>
+          <p class="mt-1.5 text-[13.5px] leading-relaxed text-ink-soft">{{ b.body }}</p>
+          <p class="mt-3 border-t border-ink/10 pt-3 text-[12.5px] leading-relaxed text-mist-ink"><span class="text-ink-soft">مدعوم بـ</span> {{ b.out }}</p>
+        </li>
+      {% endfor %}
+    </ul>
+  </section>
+
+  {# ============================ INGREDIENTS ============================ #}
+  <section class="pt-16 sm:pt-24">
+    <header class="max-w-2xl" data-stagger="80">
+      <span class="eyebrow" data-reveal="down">المكونات</span>
+      <h2 class="h-display text-sect mt-3 text-olive" data-reveal="up">أربعة عشر مكونا في عبوة واحدة</h2>
+      <p class="mt-3 text-[15px] leading-relaxed text-ink-soft" data-reveal="up">أبرز المستخلصات والزيوت في التركيبة. القائمة الكاملة في تفاصيل المنتج أعلاه.</p>
+    </header>
+    <ul class="mt-8 grid grid-cols-2 gap-3 sm:mt-10 sm:gap-4 lg:grid-cols-3" data-stagger="110">
+      {% for g in ingredients %}
+        <li class="card card-hover group overflow-hidden" data-reveal="up">
+          <div class="overflow-hidden bg-cream-deep/50">
+            <img src="{{ ('images/mussdl/' ~ g.image ~ '.webp')|asset }}" alt="{{ g.name }}" width="900" height="900" loading="lazy" decoding="async"
+                 class="aspect-[4/3] w-full object-cover transition-transform duration-[900ms] ease-[cubic-bezier(.16,1,.3,1)] group-hover:scale-105"/>
+          </div>
+          <div class="p-5">
+            <div class="flex items-baseline justify-between gap-3"><h3 class="h-display text-[22px] text-olive">{{ g.name }}</h3><span class="pill bg-olive text-gold">{{ g.role }}</span></div>
+            <p class="mt-2.5 text-[13.5px] leading-relaxed text-ink-soft">{{ g.body }}</p>
+          </div>
+        </li>
+      {% endfor %}
+    </ul>
+  </section>
+
+  {# ============================ HOW TO USE ============================ #}
+  <section class="pt-16 sm:pt-24">
+    <header class="max-w-2xl" data-stagger="80">
+      <span class="eyebrow" data-reveal="down">طريقة الاستخدام</span>
+      <h2 class="h-display text-sect mt-3 text-olive" data-reveal="up">ثلاث خطوات، من مرتين إلى ثلاث مرات أسبوعيا</h2>
+    </header>
+    <ol class="mt-8 grid gap-4 sm:mt-10 sm:grid-cols-3" data-stagger="120">
+      {% for s in steps %}
+        <li class="card flex h-full flex-col p-6" data-reveal="up">
+          <span class="eyebrow">{{ s.num }}</span>
+          <h3 class="mt-3 text-[18px] font-medium text-olive">{{ s.title }}</h3>
+          <p class="mt-2 flex-1 text-[13.5px] leading-relaxed text-ink-soft">{{ s.body }}</p>
+          <span class="num mt-4 inline-flex w-fit items-center gap-1.5 rounded-full bg-mist/20 px-3 py-1 text-[12px] text-mist-ink">{{ s.time }}</span>
+        </li>
+      {% endfor %}
+    </ol>
+  </section>
+
+  {# Salla-managed blocks (reviews, related products, etc.) #}
+  <div class="s-blocks-wrapper pt-16 sm:pt-24">{% hook 'product.single.after_product_info' %}</div>
+
+  {% if whatsapp %}
+    <aside class="mt-12 mb-20 flex flex-col items-center gap-4 rounded-[var(--radius-card)] border border-mist/50 bg-mist/15 p-6 text-center sm:mb-28 sm:flex-row sm:p-7 sm:text-right" data-reveal="up">
+      <span class="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-mist-deep text-shell"><i class="sicon-whatsapp text-xl"></i></span>
+      <div class="flex-1"><h3 class="text-[16px] font-medium text-mist-ink">لم تجدي إجابتك؟</h3><p class="mt-1 text-[13.5px] leading-relaxed text-ink-soft">فريقنا يرد على استفساراتك عن المنتج والطلبات.</p></div>
+      <a href="https://wa.me/{{ whatsapp|replace({' ': '', '+': '', '-': ''}) }}" target="_blank" rel="noopener" class="btn inline-flex shrink-0 bg-mist-deep text-shell hover:translate-y-[-2px] hover:bg-[#374a52]">راسلينا على واتساب</a>
+    </aside>
+  {% else %}
+    <div class="pb-20 sm:pb-28"></div>
+  {% endif %}
+</div>
+{% endblock %}
+
+{% block scripts %}
+  <script defer src="{{ 'product.js' | asset }}"></script>
+{% endblock %}

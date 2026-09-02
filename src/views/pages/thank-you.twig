@@ -1,0 +1,62 @@
+{# Order confirmation — Salla-rendered order data inside the Mussdl chrome. #}
+{% extends "layouts.mussdl" %}
+{% block content %}
+<div class="shell pt-8 pb-20 sm:pt-12 sm:pb-28">
+  {% hook 'thank-you:start' %}
+  <nav class="text-[12.5px] text-ink-soft" aria-label="مسار التنقل"><salla-breadcrumb></salla-breadcrumb></nav>
+
+  <div class="card mx-auto mt-8 max-w-3xl p-8 text-center sm:p-12" data-stagger="90">
+    <span class="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-olive text-gold" data-reveal="scale"><i class="sicon-check text-2xl"></i></span>
+    <span class="eyebrow mt-6 inline-flex" data-reveal="down">تم استلام طلبك</span>
+    <h1 data-testid="store-thankyou-title" class="h-display text-sect mt-3 text-olive" data-reveal="up">{{ thank_you_title }}</h1>
+    <p class="mt-3 text-[15px] text-ink-soft" data-reveal="up">
+      {{ trans('pages.thank_you.order_id') }}
+      <salla-button data-testid="store-thankyou-order-id" class="relative" onclick="app.copyToClipboard(event)" color="dark" shape="link" data-content="{{ order.reference_id }}">
+        <span class="num font-semibold text-olive">#{{ order.reference_id }}</span>
+        <i class="copy-icon sicon-swap-stroke pointer-events-none mr-1"></i>
+      </salla-button>
+    </p>
+    <div class="mt-6 flex flex-col justify-center gap-3 sm:flex-row" data-reveal="up">
+      <a href="{{ link('/') }}" class="btn-primary">العودة إلى الرئيسية</a>
+      <a href="{{ link('/customer/orders/' ~ order.id) }}" class="btn-outline">تفاصيل الطلب</a>
+    </div>
+  </div>
+
+  <div class="mx-auto mt-8 max-w-3xl">
+    {% hook 'thank-you:items.start' %}
+    <salla-order-shipments class="mb-6 block empty:hidden"></salla-order-shipments>
+    <salla-next-order-coupon data-testid="store-thankyou-coupon"></salla-next-order-coupon>
+    {% if order.is_pickable %}<salla-order-branch data-testid="store-thankyou-branch"></salla-order-branch>{% endif %}
+    {% hook 'thank-you:items.end' %}
+
+    <div class="mt-6 grid gap-4 sm:grid-cols-2">
+      <div class="card flex flex-col items-center p-6 text-center">
+        <i class="sicon-newspaper-alt mb-3 text-2xl text-gold-ink"></i>
+        {% if order.email_sent %}
+          <p class="text-[13.5px] text-ink-soft">{{ trans('pages.thank_you.email_sent') }}</p>
+          <b class="mt-1 text-[14px] text-olive">{{ order.customer.email }}</b>
+        {% else %}
+          <p class="text-[13.5px] text-ink-soft">{{ trans('pages.thank_you.resend_email') }}</p>
+          <form onsubmit="return salla.form.onSubmit('order.sendInvoice', event)" class="mt-3 flex w-full gap-2">
+            <input data-testid="store-thankyou-email-input" type="email" class="field" placeholder="your@email.com" required name="email">
+            <salla-button data-testid="store-thankyou-email-submit" type="submit" loader-position="center"><span class="btn__text">{{ trans('blocks.comments.submit') }}</span></salla-button>
+          </form>
+        {% endif %}
+      </div>
+      <div class="card flex flex-col items-center p-6 text-center">
+        <i class="sicon-mail-letter mb-3 text-2xl text-gold-ink"></i>
+        <p class="text-[13.5px] text-ink-soft">{{ trans('common.titles.support') }}</p>
+        <div class="mt-2 flex flex-wrap justify-center gap-4 text-[14px]">
+          {% if store.contacts.mobile %}<a href="tel:{{ store.contacts.mobile }}" class="num text-olive hover:text-gold-ink"><i class="sicon-phone ml-1"></i>{{ store.contacts.mobile }}</a>{% endif %}
+          {% if store.contacts.whatsapp %}<a href="https://wa.me/{{ store.contacts.whatsapp|replace({' ': '', '+': '', '-': ''}) }}" target="_blank" rel="noopener" class="num text-olive hover:text-gold-ink"><i class="sicon-whatsapp ml-1"></i>{{ store.contacts.whatsapp }}</a>{% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+  {% hook 'thank-you:end' %}
+</div>
+{% endblock %}
+
+{% block scripts %}
+  <script defer src="{{ 'checkout.js' | asset }}"></script>
+{% endblock %}

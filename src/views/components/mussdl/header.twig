@@ -1,0 +1,90 @@
+{#
+  Mussdl header. Static brand navigation (single-product store) plus Salla's
+  own cart summary and account menu, which handle the live state.
+#}
+{% set product_url = theme.settings.get('mussdl_product_url', '/') %}
+{% set offer_text  = theme.settings.get('mussdl_offer_text', '') %}
+{% set home = link('/') %}
+{% set nav = [
+    { label: 'المنتج',           href: product_url },
+    { label: 'لماذا مسدل',       href: home ~ '#benefits' },
+    { label: 'المكونات',         href: home ~ '#ingredients' },
+    { label: 'النتائج',          href: home ~ '#results' },
+    { label: 'طريقة الاستخدام',  href: home ~ '#ritual' },
+    { label: 'عن مسدل',          href: home ~ '#about' }
+] %}
+
+<header data-testid="store-header" class="sticky top-0 z-50 border-b border-ink/10 bg-cream/85 backdrop-blur" data-site-header>
+
+  {% if theme.settings.get('mussdl_show_offer_bar', true) and offer_text %}
+    <div class="bg-olive text-cream" data-offer-bar>
+      <div class="shell flex items-center justify-center gap-3 py-2 text-[12.5px]">
+        <span class="text-gold">◆</span>
+        <span>{{ offer_text }}</span>
+        <button type="button" class="absolute right-auto left-3 text-cream/60 hover:text-cream" data-offer-close aria-label="إغلاق">×</button>
+      </div>
+    </div>
+  {% endif %}
+
+  <div class="shell flex h-[72px] items-center justify-between gap-4">
+
+    {# Brand #}
+    <a href="{{ home }}" class="group flex shrink-0 items-center" aria-label="{{ store.name }}">
+      <img src="{{ 'images/mussdl/logo-olive.webp'|asset }}" alt="{{ store.name }}" width="644" height="200"
+           class="h-10 w-auto transition-opacity group-hover:opacity-80 sm:h-11" fetchpriority="high"/>
+      {% if is_page('index') %}<h1 class="sr-only">{{ store.name }}</h1>{% else %}<h2 class="sr-only">{{ store.name }}</h2>{% endif %}
+    </a>
+
+    {# Desktop nav #}
+    <nav class="hidden items-center gap-7 lg:flex" aria-label="التنقل الرئيسي">
+      {% for item in nav %}
+        <a href="{{ item.href }}" class="text-[14px] text-ink transition-colors hover:text-olive">{{ item.label }}</a>
+      {% endfor %}
+    </nav>
+
+    {# Actions #}
+    <div class="flex items-center gap-2 sm:gap-3">
+      <span class="hidden items-center gap-1.5 text-[12px] text-ink-soft xl:flex">
+        <i class="sicon-shipping-fast text-gold-ink"></i>
+        توصيل مجاني فوق <span class="num">٢٠٠ ر.س</span>
+      </span>
+
+      <salla-user-menu data-testid="store-header-user-menu" avatar-only show-header show-trigger
+                       class="hidden sm:block"></salla-user-menu>
+
+      <salla-cart-summary data-testid="store-header-cart"
+                          class="inline-flex items-center gap-2 rounded-full border border-ink/10 bg-shell/80 px-4 py-2 text-[13px] text-ink">
+        <i slot="icon" class="sicon-shopping-bag"></i>
+      </salla-cart-summary>
+
+      <button type="button" data-menu-open aria-expanded="false" aria-controls="mussdl-mobile-nav"
+              class="flex h-10 w-10 items-center justify-center rounded-full text-ink transition hover:bg-ink/5 lg:hidden"
+              aria-label="فتح القائمة">
+        <i class="sicon-menu text-xl"></i>
+      </button>
+    </div>
+  </div>
+
+  {# Mobile drawer #}
+  <div id="mussdl-mobile-nav" class="fixed inset-0 z-[60] hidden" data-menu-root>
+    <div class="absolute inset-0 bg-ink/40 opacity-0 transition-opacity duration-300" data-menu-scrim></div>
+    <div class="absolute inset-y-0 right-0 flex w-[82%] max-w-[340px] translate-x-full flex-col bg-cream shadow-2xl
+                transition-transform duration-[400ms] ease-[cubic-bezier(.16,1,.3,1)]" data-menu-panel>
+      <div class="flex items-center justify-between border-b border-ink/10 px-5 py-4">
+        <img src="{{ 'images/mussdl/logo-olive.webp'|asset }}" alt="{{ store.name }}" width="644" height="200" class="h-9 w-auto"/>
+        <button type="button" data-menu-close class="flex h-10 w-10 items-center justify-center rounded-full text-ink transition hover:bg-ink/5" aria-label="إغلاق القائمة">
+          <i class="sicon-cancel text-xl"></i>
+        </button>
+      </div>
+      <nav class="flex flex-col px-5 py-4" aria-label="قائمة الجوال">
+        {% for item in nav %}
+          <a href="{{ item.href }}" class="border-b border-ink/8 py-3.5 text-[16px] text-ink" data-menu-link>{{ item.label }}</a>
+        {% endfor %}
+      </nav>
+      <div class="mt-auto space-y-3 px-5 pb-6">
+        <a href="{{ product_url }}" class="btn-primary w-full">اطلبي العبوة الآن</a>
+        <div class="flex justify-center"><salla-user-menu show-trigger></salla-user-menu></div>
+      </div>
+    </div>
+  </div>
+</header>

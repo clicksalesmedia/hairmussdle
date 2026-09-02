@@ -1,0 +1,78 @@
+{#
+  Mussdl layout.
+  Pages that carry the Mussdl design extend this instead of `layouts.master`
+  (Raed's). Only mussdl.css is loaded here, so the two Tailwind builds never
+  fight: Raed's stylesheet stays on the pages it still owns (customer account,
+  orders, blog, brands, product listing).
+#}
+<!DOCTYPE html>
+<html lang="{{ language.code }}" dir="{{ theme.is_rtl ? 'rtl' : 'ltr' }}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="theme-color" content="#d5d2c5">
+    {{ theme.settings.set('placeholder', 'images/placeholder.png') }}
+
+    <script data-cfasync="false">
+        window.header_is_sticky = true;
+        window.enable_add_product_toast = true;
+        window.can_access_wallet = {{ user.can_access_wallet | json_encode }};
+        window.mussdl = {
+            productUrl: {{ theme.settings.get('mussdl_product_url', '/')|json_encode }},
+            whatsapp:   {{ theme.settings.get('mussdl_whatsapp', '')|json_encode }}
+        };
+    </script>
+
+    {% hook 'head:start' %}
+    {% hook head %}
+    {% block styles %}{% endblock %}
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Almarai:wght@300;400;700;800&family=Cormorant+Garamond:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ 'fonts/sallaicons.css'|cdn }}"/>
+    <link rel="stylesheet" href="{{ 'css/mussdl.css'|asset }}">
+
+    <style>
+        :root {
+            --color-primary: #4e4f3e;
+            --color-primary-dark: #3f402f;
+            --color-primary-light: #6d6f58;
+            --color-primary-reverse: #f2f0e8;
+            --font-main: 'Almarai', system-ui, sans-serif;
+            --s-radius: 999px;
+        }
+        /* Salla web components pick these up so buttons/inputs match the brand. */
+        salla-add-product-button, salla-button, salla-quantity-input, salla-cart-summary {
+            --salla-font-family: var(--font-main);
+        }
+    </style>
+    {% hook 'head:end' %}
+</head>
+<body id="app" class="theme-mussdl {% hook 'body:classes' %} {% block body_class %}{% endblock %}">
+<noscript>
+    To get full functionality of this site you need to enable JavaScript.
+</noscript>
+
+{% hook 'body:start' %}
+{% component 'mussdl.header' %}
+
+<main id="main-content" role="main">
+    {% block content %}{% endblock %}
+</main>
+
+{% component 'mussdl.footer' %}
+{% hook 'body:end' %}
+
+<salla-add-product-toast data-testid="store-add-product-toast"></salla-add-product-toast>
+<salla-offer-modal data-testid="store-offer-modal"></salla-offer-modal>
+<salla-search data-testid="store-search-modal"></salla-search>
+<salla-login-modal data-testid="store-login-modal"></salla-login-modal>
+{% if store.scope %}
+    <salla-scopes data-testid="store-scopes" selection="{{ store.scope.display_as == 'popup' ? 'mandatory' : 'optional' }}"></salla-scopes>
+{% endif %}
+
+<script defer src="{{ 'mussdl.js'|asset }}"></script>
+{% block scripts %}{% endblock %}
+</body>
+</html>

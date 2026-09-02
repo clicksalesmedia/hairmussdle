@@ -1,0 +1,53 @@
+{# Mussdl footer: brand column, store menu, Salla contacts/social/payments. #}
+{% set product_url = theme.settings.get('mussdl_product_url', '/') %}
+{% set home = link('/') %}
+<footer data-testid="store-footer" class="mt-24 bg-olive text-cream">
+  <div class="shell grid gap-10 py-14 sm:py-16 md:grid-cols-2 lg:grid-cols-4 lg:gap-8">
+
+    <div class="lg:pl-8">
+      <a href="{{ home }}" class="inline-block">
+        <img src="{{ 'images/mussdl/logo-cream.webp'|asset }}" alt="{{ store.name }}" width="644" height="200" class="h-14 w-auto" loading="lazy"/>
+      </a>
+      <p class="mt-4 max-w-xs text-[15px] leading-relaxed text-cream/70">
+        {{ store.description ? store.description|striptags : 'عناية سعودية بالشعر، بمكونات نباتية مختارة وروتين يناسب يومك.' }}
+      </p>
+      <div class="mt-5 [&_a]:text-cream/70 [&_a:hover]:text-gold">
+        <salla-social data-testid="store-footer-social"></salla-social>
+      </div>
+    </div>
+
+    <div>
+      <h3 class="mb-4 text-[13px] font-semibold tracking-[.18em] text-cream/50 uppercase">المتجر</h3>
+      <ul class="space-y-2.5 text-[15px]">
+        <li><a href="{{ product_url }}" class="text-cream/85 transition hover:text-gold">معزز الشعر بالقرنفل</a></li>
+        <li><a href="{{ home }}#benefits" class="text-cream/85 transition hover:text-gold">لماذا مسدل</a></li>
+        <li><a href="{{ home }}#ingredients" class="text-cream/85 transition hover:text-gold">المكونات</a></li>
+        <li><a href="{{ home }}#ritual" class="text-cream/85 transition hover:text-gold">طريقة الاستخدام</a></li>
+      </ul>
+    </div>
+
+    <div>
+      <h3 class="mb-4 text-[13px] font-semibold tracking-[.18em] text-cream/50 uppercase">المساعدة</h3>
+      <div class="[&_a]:text-cream/85 [&_a:hover]:text-gold [&_li]:py-1 text-[15px]">
+        <salla-menu data-testid="store-footer-menu" source="footer" with-cookie-preferences></salla-menu>
+      </div>
+    </div>
+
+    <div>
+      <h3 class="mb-4 text-[13px] font-semibold tracking-[.18em] text-cream/50 uppercase">تواصلي معنا</h3>
+      <div class="[&_a]:text-cream/85 [&_a:hover]:text-gold text-[15px]">
+        <salla-contacts data-testid="store-footer-contacts"></salla-contacts>
+      </div>
+      <div class="mt-5">
+        <salla-trust-badges data-testid="store-footer-trust-badges" dark></salla-trust-badges>
+      </div>
+    </div>
+  </div>
+
+  <div class="border-t border-cream/10">
+    <div class="shell flex flex-col items-center justify-between gap-4 py-5 text-[12.5px] text-cream/55 sm:flex-row">
+      <span>{% hook copyright %}</span>
+      <salla-payments data-testid="store-footer-payments"></salla-payments>
+    </div>
+  </div>
+</footer>

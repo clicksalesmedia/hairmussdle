@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <rect width="64" height="64" rx="14" fill="#4e4f3e"/>
+  <!-- A single gold strand, echoing the site's background motif. -->
+  <path d="M20 14c10 6 4 14 12 20s2 14 12 16" fill="none" stroke="#bfa354"
+        stroke-width="4" stroke-linecap="round"/>
+</svg>

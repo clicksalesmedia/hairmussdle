@@ -1,0 +1,312 @@
+@import "tailwindcss";
+@source "../../src/views";
+@source "../../src/assets/js/mussdl.js";
+
+
+/* ==========================================================================
+   MUSSDL — design tokens
+   Palette and type scale carried over from the approved Claude Design file.
+   ========================================================================== */
+
+@theme {
+  /* Brand palette. The four values the client specified:
+       background #d5d2c5 · titles + buttons #4e4f3e
+       subtitles  #bfa354 · body text        #3c414a                        */
+  --color-cream: #d5d2c5;        /* page background                          */
+  --color-cream-deep: #c8c4b5;   /* deeper band, section alternation         */
+  --color-sand: #bdb9a8;         /* hairlines and dividers                   */
+  --color-shell: #f2f0e8;        /* raised surface: cards, image mats        */
+  --color-ink: #3c414a;          /* body text                                */
+  --color-ink-soft: #4f545f;     /* muted text — darkened from #6b7280 so it
+                                    still clears 4.5:1 on the new background */
+  --color-olive: #4e4f3e;        /* titles, buttons                          */
+  --color-olive-soft: #6d6f58;
+  --color-gold: #bfa354;         /* brand accent: rules, borders, icons, and
+                                    text on the olive pill (3.4:1)           */
+  --color-gold-ink: #6b571f;     /* the same gold family, darkened for text on
+                                    a light ground — #bfa354 is 1.6:1 there  */
+  --color-gold-soft: #d8c48a;
+  --color-clay: #b08968;
+  --color-mist: #89a0ad;        /* client accent: surfaces, borders, washes —
+                                   1.8:1 on the page, so never body text       */
+  --color-mist-ink: #41565f;    /* same family darkened for text (5.1:1)      */
+  --color-mist-deep: #41565f;   /* strong band background; shell text on it   */
+
+  --font-sans: "Almarai", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Cormorant Garamond", "Almarai", serif;
+
+  --radius-card: 22px;
+  --ease-out-soft: cubic-bezier(0.16, 1, 0.3, 1);
+
+  --animate-marquee: marquee 34s linear infinite;
+  --animate-float: float 7s ease-in-out infinite;
+  --animate-spin-slow: spin 22s linear infinite;
+  --animate-cue: cue 2.2s ease-in-out infinite;
+  --animate-shimmer: shimmer 2.4s linear infinite;
+}
+
+@keyframes marquee   { from { transform: translateX(0); }  to { transform: translateX(50%); } }
+@keyframes float     { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-14px); } }
+@keyframes cue       { 0% { transform: translateY(0); opacity: 0; } 40% { opacity: 1; } 100% { transform: translateY(16px); opacity: 0; } }
+@keyframes shimmer   { from { background-position: 200% 0; } to { background-position: -200% 0; } }
+@keyframes drift     { 0%, 100% { transform: translate3d(0,0,0) scale(1); } 50% { transform: translate3d(2%, -3%, 0) scale(1.06); } }
+@keyframes strand    { to { stroke-dashoffset: 0; } }
+@keyframes sway      { 0%, 100% { transform: translateY(0) scaleY(1); } 50% { transform: translateY(-1.4%) scaleY(1.02); } }
+
+/* ==========================================================================
+   Base
+   ========================================================================== */
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+    /* `clip`, not `hidden`: it stops stray horizontal overflow without making
+       html a scroll container, which would break the sticky header. */
+    overflow-x: clip;
+  }
+
+  body {
+    background-color: var(--color-cream);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    overflow-x: clip;
+    /* Arabic numerals and long words shouldn't blow out narrow phone columns. */
+    overflow-wrap: break-word;
+  }
+
+  ::selection { background: var(--color-gold); color: #fff; }
+
+  :focus-visible {
+    outline: 2px solid var(--color-gold);
+    outline-offset: 3px;
+    border-radius: 4px;
+  }
+
+  /* Respect the OS setting: kill decorative motion, keep the content visible. */
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    *, *::before, *::after {
+      animation-duration: 0.001ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.001ms !important;
+    }
+    .hair-bg { display: none; }
+  }
+}
+
+/* ==========================================================================
+   Components
+   ========================================================================== */
+
+@layer components {
+
+  /* --- Buttons ---------------------------------------------------------- */
+
+  .btn, .btn-primary, .btn-gold, .btn-outline, .btn-ghost {
+    @apply inline-flex items-center justify-center gap-2 rounded-full font-medium
+           transition-all duration-300 select-none text-center;
+    @apply px-6 py-3 text-sm sm:px-7 sm:py-3.5 sm:text-[15px];
+    will-change: transform;
+  }
+  .btn:active, .btn-primary:active, .btn-gold:active,
+  .btn-outline:active, .btn-ghost:active { transform: scale(0.97); }
+  .btn:disabled, .btn-primary:disabled, .btn-gold:disabled,
+  .btn-outline:disabled, .btn-ghost:disabled { @apply opacity-45 pointer-events-none; }
+
+  .btn-primary {
+    @apply bg-olive text-cream;
+    box-shadow: 0 10px 30px -12px rgba(78, 79, 62, 0.75);
+  }
+  .btn-primary:hover {
+    @apply bg-[#3f402f];
+    box-shadow: 0 18px 40px -14px rgba(78, 79, 62, 0.85);
+    transform: translateY(-2px);
+  }
+
+  .btn-gold {
+    @apply bg-gold text-white;
+    box-shadow: 0 10px 30px -12px rgba(191, 163, 84, 0.8);
+  }
+  .btn-gold:hover { @apply bg-[#ab9047]; transform: translateY(-2px); }
+
+  .btn-outline { @apply border border-ink/20 bg-transparent text-ink; }
+  .btn-outline:hover { @apply border-gold text-gold-ink bg-gold/12; }
+
+  .btn-ghost { @apply bg-shell/80 text-ink border border-ink/10 backdrop-blur; }
+  .btn-ghost:hover { @apply bg-shell border-gold/50 text-olive; }
+
+  /* --- Surfaces --------------------------------------------------------- */
+
+  .card {
+    @apply rounded-[var(--radius-card)] bg-shell/85 border border-ink/8 backdrop-blur-sm;
+    box-shadow: 0 1px 2px rgba(60, 65, 74, 0.05), 0 14px 38px -24px rgba(60, 65, 74, 0.45);
+  }
+
+  .card-hover {
+    @apply transition-all duration-500;
+    transition-timing-function: var(--ease-out-soft);
+  }
+  .card-hover:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 1px 2px rgba(60, 65, 74, 0.05), 0 30px 60px -30px rgba(60, 65, 74, 0.45);
+    @apply border-gold/30;
+  }
+
+  .pill {
+    @apply inline-flex items-center gap-1.5 rounded-full px-3 py-1
+           text-[11px] font-medium tracking-wide sm:text-xs;
+  }
+
+  /* Small-caps section label. Deep gold, because the brand gold reads at
+     1.6:1 on the new background — far too low to carry text. */
+  .eyebrow {
+    @apply inline-flex items-center gap-2 text-[11px] font-medium tracking-[.22em]
+           text-gold-ink uppercase sm:text-xs;
+  }
+
+  /* Where the literal brand gold is wanted as text, it sits on an olive chip,
+     which lifts it to 3.4:1 — enough at this size and weight. */
+  .eyebrow-pill {
+    @apply inline-flex items-center gap-2 rounded-full bg-olive px-3.5 py-1.5
+           text-[11px] font-medium tracking-[.2em] text-gold uppercase sm:text-xs;
+  }
+
+  /* Section headline — the display serif is Latin-only, so Arabic falls
+     through to IBM Plex. Weight and tracking are tuned for that fallback. */
+  .h-display {
+    @apply font-display leading-[1.15] tracking-tight;
+    font-weight: 500;
+  }
+
+  /* --- Forms ------------------------------------------------------------ */
+
+  .field {
+    @apply w-full rounded-xl border border-ink/15 bg-shell/90 px-4 py-3 text-[15px]
+           text-ink placeholder:text-ink-soft/60 transition-all duration-200;
+  }
+  .field:focus {
+    @apply border-gold bg-shell outline-none;
+    box-shadow: 0 0 0 4px rgba(191, 163, 84, 0.13);
+  }
+  .field-label {
+    @apply mb-1.5 block text-[13px] font-medium text-ink/75;
+  }
+  .field-error {
+    @apply border-red-400/70;
+  }
+  .field-error:focus { box-shadow: 0 0 0 4px rgba(248, 113, 113, 0.15); }
+
+  /* --- Decorative background: flowing hair strands ---------------------- */
+
+  .hair-bg {
+    @apply pointer-events-none fixed inset-0 -z-10 overflow-hidden;
+    contain: strict;
+  }
+  .hair-bg svg { @apply h-full w-full; }
+  .hair-bg .strand {
+    fill: none;
+    stroke-linecap: round;
+    stroke-dasharray: 2400;
+    stroke-dashoffset: 2400;
+    animation: strand 3.2s var(--ease-out-soft) forwards, sway 11s ease-in-out infinite;
+    transform-origin: center;
+  }
+  .hair-bg .wash {
+    animation: drift 22s ease-in-out infinite;
+    transform-origin: center;
+  }
+
+  /* --- Marquee ---------------------------------------------------------- */
+
+  .marquee-track {
+    @apply flex w-max shrink-0 items-center;
+    animation: var(--animate-marquee);
+  }
+  .marquee:hover .marquee-track { animation-play-state: paused; }
+
+  /* --- Skeleton --------------------------------------------------------- */
+
+  .skeleton {
+    background: linear-gradient(90deg,
+      rgba(189,185,168,.30) 25%, rgba(242,240,232,.65) 37%, rgba(189,185,168,.30) 63%);
+    background-size: 200% 100%;
+    animation: var(--animate-shimmer);
+  }
+}
+
+/* ==========================================================================
+   Utilities
+   ========================================================================== */
+
+@layer utilities {
+  .shell { @apply mx-auto w-full max-w-[1280px] px-4 sm:px-6 lg:px-8; }
+
+  /* Fluid type — locks the ends so headlines never overflow a 320px phone. */
+  .text-hero  { font-size: clamp(2.15rem, 7.2vw, 4.6rem); }
+  /* One line, always. The cap differs per breakpoint because the hero is a
+     single column on phones and a ~54% column from lg up. */
+  .text-hero-line { font-size: clamp(1.7rem, 9.6vw, 2.9rem); }
+  @media (min-width: 1024px) { .text-hero-line { font-size: clamp(2.4rem, 5.1vw, 4.2rem); } }
+  .text-sect  { font-size: clamp(1.6rem, 4.4vw, 2.9rem); }
+
+  .num { font-feature-settings: "tnum"; }
+
+  /* Hides the scrollbar on the horizontal product rail without killing scroll. */
+  .no-bar { scrollbar-width: none; -ms-overflow-style: none; }
+  .no-bar::-webkit-scrollbar { display: none; }
+
+  .snap-rail { scroll-snap-type: x mandatory; }
+  .snap-item { scroll-snap-align: start; }
+
+  .gold-rule {
+    background: linear-gradient(to left, transparent, var(--color-gold), transparent);
+  }
+
+  /* Reveal-on-scroll. Content is visible by default and only hidden once JS
+     has confirmed it can animate it back in — so a JS failure never blanks
+     the page. */
+  .js-motion [data-reveal] { opacity: 0; }
+}
+
+/* --- Salla web components inside the Mussdl layout ------------------------
+   Plain CSS on purpose: Tailwind v4 can't @apply the custom component classes,
+   and these hooks reach into markup the platform renders, not ours. */
+@layer components {
+  salla-quantity-input { display: inline-flex; align-items: center; }
+  salla-breadcrumb { font-size: 12.5px; }
+  salla-breadcrumb a { color: var(--color-ink-soft); transition: color .2s; }
+  salla-breadcrumb a:hover { color: var(--color-olive); }
+  salla-menu a { display: block; padding: .25rem 0; color: color-mix(in srgb, var(--color-cream) 85%, transparent); transition: color .2s; }
+  salla-menu a:hover { color: var(--color-gold); }
+  salla-cart-summary { color: var(--color-ink); }
+
+  .mussdl-options .form-label,
+  .mussdl-options label { display: block; margin-bottom: .375rem; font-size: 13px; font-weight: 500; color: color-mix(in srgb, var(--color-ink) 75%, transparent); }
+  .mussdl-options .form-input,
+  .mussdl-options select,
+  .mussdl-options input[type="text"],
+  .mussdl-options input[type="number"],
+  .mussdl-options textarea {
+    width: 100%; border-radius: .75rem; padding: .75rem 1rem; font-size: 15px; color: var(--color-ink);
+    border: 1px solid color-mix(in srgb, var(--color-ink) 15%, transparent);
+    background: color-mix(in srgb, var(--color-shell) 90%, transparent);
+    transition: border-color .2s, box-shadow .2s;
+  }
+  .mussdl-options .form-input:focus,
+  .mussdl-options select:focus { border-color: var(--color-gold); outline: none; box-shadow: 0 0 0 4px rgba(191,163,84,.13); }
+  .mussdl-options .radio-group,
+  .mussdl-options .options-list { display: grid; gap: .625rem; }
+  .mussdl-options .radio-group label,
+  .mussdl-options .options-list label {
+    display: flex; align-items: center; gap: .75rem; padding: .875rem; border-radius: 1rem; cursor: pointer; margin: 0;
+    border: 1px solid color-mix(in srgb, var(--color-ink) 12%, transparent);
+    background: color-mix(in srgb, var(--color-shell) 60%, transparent);
+    font-size: 14.5px; font-weight: 500; color: var(--color-ink);
+  }
+  .mussdl-options .radio-group label:has(input:checked),
+  .mussdl-options .options-list label:has(input:checked) {
+    border-color: var(--color-olive); background: color-mix(in srgb, var(--color-olive) 8%, transparent);
+    box-shadow: 0 10px 26px -18px rgba(78,79,62,.9);
+  }
+}
