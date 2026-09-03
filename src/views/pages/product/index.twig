@@ -45,7 +45,7 @@
 
     <div class="w-full min-w-0 flex-1">
       {% hook 'product:index.items.start' %}
-      <salla-products-list data-testid="store-products-list" class="mussdl-products block"
+      <salla-products-list data-testid="store-products-list" class="mussdl-products block" product-card-component="salla-product-card"
                            source="{{ page.slug }}" source-value="{{ page.id }}" {{ filters ? 'filters-results' : '' }}></salla-products-list>
       {% hook 'product:index.items.end' %}
     </div>

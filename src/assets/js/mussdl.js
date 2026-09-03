@@ -316,6 +316,30 @@
     });
   }
 
+  /* Salla's built-in product card mounts with `opacity:0; translateY(20px)` inline
+     and leaves the entrance to the theme (Raed does it with anime.js). Reveal each
+     card as it lands, with a small stagger, then drop the inline styles. */
+  function mountProductCards() {
+    const lists = [...document.querySelectorAll('salla-products-list')];
+    if (!lists.length) return;
+    const reveal = (card, index) => {
+      if (card.dataset.revealed) return;
+      card.dataset.revealed = '1';
+      const finish = () => { card.style.opacity = ''; card.style.transform = ''; };
+      if (reduceMotion || !('animate' in Element.prototype)) return finish();
+      const anim = card.animate(
+        [{ opacity: 0, transform: 'translateY(20px)' }, { opacity: 1, transform: 'translateY(0)' }],
+        { duration: 620, delay: Math.min(index, 8) * 60, easing: SPRING, fill: 'both' }
+      );
+      anim.onfinish = () => { finish(); anim.cancel(); };
+    };
+    const sweep = (root) => [...root.querySelectorAll('.s-product-card-entry')].forEach(reveal);
+    lists.forEach((list) => {
+      sweep(list);
+      new MutationObserver(() => sweep(list)).observe(list, { childList: true, subtree: true });
+    });
+  }
+
   /* ===========================================================================
      BOOT
      ======================================================================== */
@@ -325,6 +349,7 @@
     wireHeader();
     mountProductLinks();
     mountProductsList();
+    mountProductCards();
     mountThumbs();
     mountCompare();
     mountMarquee();
