@@ -1,5 +1,5 @@
 {# Mussdl footer: brand column, store menu, Salla contacts/social/payments. #}
-{% set product_url = theme.settings.get('mussdl_product_url', '/') %}
+{% set product_url = theme.settings.get('mussdl_product_url') ?: link('/') %}
 {% set home = link('/') %}
 <footer data-testid="store-footer" class="mt-24 bg-olive text-cream">
   <div class="shell grid gap-10 py-14 sm:py-16 md:grid-cols-2 lg:grid-cols-4 lg:gap-8">
@@ -19,7 +19,8 @@
     <div>
       <h3 class="mb-4 text-[13px] font-semibold tracking-[.18em] text-cream/50 uppercase">المتجر</h3>
       <ul class="space-y-2.5 text-[15px]">
-        <li><a href="{{ product_url }}" class="text-cream/85 transition hover:text-gold">معزز الشعر بالقرنفل</a></li>
+        <li><a href="{{ product_url }}" class="text-cream/85 transition hover:text-gold" data-product-link>معزز الشعر بالقرنفل</a></li>
+        {% if theme.settings.get('mussdl_show_offers', true) %}<li><a href="{{ home }}#offers" class="text-cream/85 transition hover:text-gold">عروض اليوم الوطني</a></li>{% endif %}
         <li><a href="{{ home }}#benefits" class="text-cream/85 transition hover:text-gold">لماذا مسدل</a></li>
         <li><a href="{{ home }}#ingredients" class="text-cream/85 transition hover:text-gold">المكونات</a></li>
         <li><a href="{{ home }}#ritual" class="text-cream/85 transition hover:text-gold">طريقة الاستخدام</a></li>

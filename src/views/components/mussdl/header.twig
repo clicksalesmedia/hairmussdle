@@ -2,17 +2,20 @@
   Mussdl header. Static brand navigation (single-product store) plus Salla's
   own cart summary and account menu, which handle the live state.
 #}
-{% set product_url = theme.settings.get('mussdl_product_url', '/') %}
+{# Empty setting → home for now; mussdl.js re-points every [data-product-link] at the store's Mussdl product. #}
+{% set product_url = theme.settings.get('mussdl_product_url') ?: link('/') %}
 {% set offer_text  = theme.settings.get('mussdl_offer_text', '') %}
 {% set home = link('/') %}
-{% set nav = [
-    { label: 'المنتج',           href: product_url },
+{% set show_offers = theme.settings.get('mussdl_show_offers', true) %}
+{% set nav = [{ label: 'المنتج', href: product_url, product: true }] %}
+{% if show_offers %}{% set nav = nav|merge([{ label: 'عروض اليوم الوطني', href: home ~ '#offers' }]) %}{% endif %}
+{% set nav = nav|merge([
     { label: 'لماذا مسدل',       href: home ~ '#benefits' },
     { label: 'المكونات',         href: home ~ '#ingredients' },
     { label: 'النتائج',          href: home ~ '#results' },
     { label: 'طريقة الاستخدام',  href: home ~ '#ritual' },
     { label: 'عن مسدل',          href: home ~ '#about' }
-] %}
+]) %}
 
 <header data-testid="store-header" class="sticky top-0 z-50 border-b border-ink/10 bg-cream/85 backdrop-blur" data-site-header>
 
@@ -38,7 +41,7 @@
     {# Desktop nav #}
     <nav class="hidden items-center gap-7 lg:flex" aria-label="التنقل الرئيسي">
       {% for item in nav %}
-        <a href="{{ item.href }}" class="text-[14px] text-ink transition-colors hover:text-olive">{{ item.label }}</a>
+        <a href="{{ item.href }}" class="text-[14px] text-ink transition-colors hover:text-olive" {{ item.product ? 'data-product-link' : '' }}>{{ item.label }}</a>
       {% endfor %}
     </nav>
 
@@ -46,7 +49,7 @@
     <div class="flex items-center gap-2 sm:gap-3">
       <span class="hidden items-center gap-1.5 text-[12px] text-ink-soft xl:flex">
         <i class="sicon-shipping-fast text-gold-ink"></i>
-        توصيل مجاني فوق <span class="num">٢٠٠ ر.س</span>
+        شحن سريع لجميع دول الخليج
       </span>
 
       <salla-user-menu data-testid="store-header-user-menu" avatar-only show-header show-trigger
@@ -78,11 +81,11 @@
       </div>
       <nav class="flex flex-col px-5 py-4" aria-label="قائمة الجوال">
         {% for item in nav %}
-          <a href="{{ item.href }}" class="border-b border-ink/8 py-3.5 text-[16px] text-ink" data-menu-link>{{ item.label }}</a>
+          <a href="{{ item.href }}" class="border-b border-ink/8 py-3.5 text-[16px] text-ink" data-menu-link {{ item.product ? 'data-product-link' : '' }}>{{ item.label }}</a>
         {% endfor %}
       </nav>
       <div class="mt-auto space-y-3 px-5 pb-6">
-        <a href="{{ product_url }}" class="btn-primary w-full">اطلبي العبوة الآن</a>
+        <a href="{{ product_url }}" class="btn-primary w-full" data-product-link>اطلبي العبوة الآن</a>
         <div class="flex justify-center"><salla-user-menu show-trigger></salla-user-menu></div>
       </div>
     </div>

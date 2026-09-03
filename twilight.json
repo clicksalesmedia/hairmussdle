@@ -38,9 +38,9 @@
             "format": "text",
             "id": "mussdl_product_url",
             "label": "رابط صفحة المنتج",
-            "description": "يستخدم في أزرار \"اطلبي الآن\" وقائمة التنقل",
-            "value": "/",
-            "required": true,
+            "description": "يستخدم في أزرار \"اطلبي الآن\" وقائمة التنقل. إذا ترك فارغا يربط الثيم تلقائيا بمنتج مسدل في المتجر",
+            "value": "",
+            "required": false,
             "icon": "sicon-settings"
         },
         {
@@ -77,9 +77,9 @@
             "type": "string",
             "format": "text",
             "id": "mussdl_hero_price",
-            "label": "سعر العبوة المعروض في الهيرو (اختياري)",
-            "description": "مثال: ١٣٥ ر.س — اتركيه فارغا لإخفاء الشارة",
-            "value": "",
+            "label": "سعر العبوة المعروض في الهيرو وقسم المنتج",
+            "description": "مثال: ١٠٩ ر.س — اتركيه فارغا لإخفاء السعر",
+            "value": "١٠٩ ر.س",
             "required": false,
             "icon": "sicon-settings"
         },
@@ -146,9 +146,20 @@
             "format": "text",
             "id": "mussdl_offer_text",
             "label": "نص شريط العرض",
-            "value": "وفري على عبوتين فأكثر + توصيل مجاني",
+            "value": "عروض اليوم الوطني: عبوتان بـ ١٠٩ ر.س بدل ٢١٨ · ثلاث عبوات بـ ١٤٩ ر.س",
             "required": false,
             "maxLength": 120,
+            "icon": "sicon-settings"
+        },
+        {
+            "type": "boolean",
+            "format": "switch",
+            "id": "mussdl_show_offers",
+            "label": "إظهار قسم عروض اليوم الوطني",
+            "description": "يظهر في الرئيسية وصفحة المنتج والقوائم. أطفئيه بعد انتهاء العرض",
+            "value": true,
+            "selected": true,
+            "required": false,
             "icon": "sicon-settings"
         },
         {

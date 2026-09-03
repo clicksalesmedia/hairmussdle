@@ -94,6 +94,18 @@
             --s-radius: .75rem;
         }
     </style>
+    {# Mussdl: pages that still use Raed's layout (listing, search, account, blog…)
+       follow the brand palette and font whatever the dashboard colours are. #}
+    <link href="https://fonts.googleapis.com/css2?family=Almarai:wght@300;400;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --font-main: 'Almarai', system-ui, sans-serif;
+            --color-primary: #4e4f3e;
+            --color-primary-dark: #3f402f;
+            --color-primary-light: #6d6f58;
+            --color-primary-reverse: #f2f0e8;
+        }
+    </style>
     {# tracking services, custom css feature. #}
     {% hook 'head:end' %}
 </head>

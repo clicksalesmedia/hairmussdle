@@ -264,12 +264,35 @@
   }
 
   /* ===========================================================================
+     PRODUCT LINKS
+     Until the merchant fills the "رابط صفحة المنتج" setting, every CTA points
+     at the home page. Ask Salla for the store's products and re-point the CTAs
+     at the Mussdl product (by name), or at the newest product as a fallback.
+     ======================================================================== */
+
+  function mountProductLinks() {
+    const links = [...document.querySelectorAll('[data-product-link]')];
+    if (!links.length || (window.mussdl && window.mussdl.productUrl)) return;
+    const resolve = () => {
+      if (!window.salla || !salla.product || typeof salla.product.fetch !== 'function') return;
+      salla.product.fetch({ source: 'latest' }).then((res) => {
+        const items = Array.isArray(res && res.data) ? res.data : [];
+        const brand = items.find((p) => /مسدل|قرنفل|mussdl/i.test(p.name || '')) || items[0];
+        if (!brand || !brand.url) return;
+        links.forEach((a) => { a.href = brand.url; });
+      }).catch(() => {});
+    };
+    if (window.salla && typeof salla.onReady === 'function') salla.onReady(resolve); else resolve();
+  }
+
+  /* ===========================================================================
      BOOT
      ======================================================================== */
 
   function boot() {
     mountHairBackground();
     wireHeader();
+    mountProductLinks();
     mountThumbs();
     mountCompare();
     mountMarquee();

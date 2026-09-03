@@ -73,7 +73,7 @@
         <div data-testid="store-cart-empty" class="card flex flex-col items-center gap-4 p-10 text-center">
           <i class="sicon-shopping-bag text-4xl text-ink-soft"></i>
           <p class="text-[16px] text-ink">{{ trans('pages.cart.empty_cart') }}</p>
-          <a data-testid="store-cart-back-home" href="{{ theme.settings.get('mussdl_product_url', link('/')) }}" class="btn-primary">تسوقي المنتج</a>
+          <a data-testid="store-cart-back-home" href="{{ theme.settings.get('mussdl_product_url') ?: link('/') }}" class="btn-primary" data-product-link>تسوقي المنتج</a>
         </div>
       {% endfor %}
 

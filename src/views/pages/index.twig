@@ -5,7 +5,7 @@
 #}
 {% extends "layouts.mussdl" %}
 
-{% set product_url  = theme.settings.get('mussdl_product_url', '/') %}
+{% set product_url  = theme.settings.get('mussdl_product_url') ?: link('/') %}
 {% set hero_title   = theme.settings.get('mussdl_hero_title', 'معزز الشعر') %}
 {% set hero_accent  = theme.settings.get('mussdl_hero_accent', 'بالقرنفل') %}
 {% set hero_text    = theme.settings.get('mussdl_hero_text', 'تركيبة غنية بمزيج من المستخلصات النباتية والزيوت الطبيعية، صممت لدعم صحة فروة الرأس وتحسين مظهر الشعر ليبدو أكثر كثافة وحيوية ولمعانا، مع نعومة أكبر وهيشان أقل.') %}
@@ -14,23 +14,31 @@
 {% set before_img   = theme.settings.get('mussdl_before_image') ?: 'images/mussdl/before.webp'|asset %}
 {% set after_img    = theme.settings.get('mussdl_after_image')  ?: 'images/mussdl/after.webp'|asset %}
 {% set whatsapp     = theme.settings.get('mussdl_whatsapp') ?: store.contacts.whatsapp %}
-{% set price_label  = theme.settings.get('mussdl_hero_price', '') %}
+{% set price_label  = theme.settings.get('mussdl_hero_price', '١٠٩ ر.س') %}
+{% set show_offers  = theme.settings.get('mussdl_show_offers', true) %}
+
+{# National Day offers (client, Sept 2026): 2 for the price of 1 (109 instead of 218), saver 3 for 149. #}
+{% set offers = [
+  { units: 'عبوة واحدة', title: 'ابدئي الروتين',      price: '١٠٩', was: '',    note: 'عبوة ١٥٠ مل من معزز الشعر بالقرنفل.',      badge: '',                 featured: false },
+  { units: 'عبوتان',     title: 'عبوتان بسعر عبوة',   price: '١٠٩', was: '٢١٨', note: 'عرض اليوم الوطني: العبوة الثانية مجانا.',   badge: 'عرض اليوم الوطني', featured: true },
+  { units: 'ثلاث عبوات', title: 'العرض التوفيري',     price: '١٤٩', was: '٣٢٧', note: 'ثلاث عبوات لروتين كامل بسعر أقل.',          badge: 'عرض توفيري',       featured: false }
+] %}
 
 {% set benefits = [
-  { num: '٠١', title: 'مظهر أكثر كثافة وحيوية', body: 'يساعد على تحسين مظهر الشعر ليبدو أكثر كثافة وحيوية مع الاستخدام المنتظم.', out: 'زيت القرنفل العطري، إكليل الجبل، ذيل الحصان' },
+  { num: '٠١', title: 'مظهر أكثر كثافة وحيوية', body: 'يساعد على تحسين مظهر الشعر ليبدو أكثر كثافة وحيوية مع الاستخدام المنتظم.', out: 'القرنفل، إكليل الجبل، ذيل الحصان' },
   { num: '٠٢', title: 'تغذية فروة الرأس',        body: 'يدعم تغذية فروة الرأس والعناية بها، لتكون بيئة أفضل للشعر.',              out: 'عرق السوس، الأملج، الكركديه' },
   { num: '٠٣', title: 'لمعان طبيعي وهيشان أقل',   body: 'يساهم في تقليل الهيشان وتعزيز اللمعان الطبيعي للخصلات.',                  out: 'زيت السمسم، زيت اللوز الحلو، فيتامين هـ' },
   { num: '٠٤', title: 'نعومة وسهولة تصفيف',       body: 'يساعد على تنعيم الشعر وتسهيل تصفيفه من دون إثقال.',                        out: 'زيت جوز الهند، زيت الخروع، بروتين الغليكول' }
 ] %}
 {% set ingredients = [
-  { name: 'زيت القرنفل العطري', role: 'المكون البطل',   image: 'ing-clove',    body: 'قوة القرنفل التي يقوم عليها المنتج، مدعومة بمزيج من الزيوت والمستخلصات النباتية.' },
+  { name: 'القرنفل', role: 'المكون البطل',   image: 'ing-clove',    body: 'قوة القرنفل التي يقوم عليها المنتج، مدعومة بمزيج من الزيوت والمستخلصات النباتية.' },
   { name: 'إكليل الجبل',        role: 'مستخلص الأوراق', image: 'ing-rosemary', body: 'مستخلص عشبي كلاسيكي في العناية بفروة الرأس، يكمل عمل القرنفل في التركيبة.' },
   { name: 'الكركديه',           role: 'مستخلص الزهرة',  image: 'ing-hibiscus', body: 'زهرة غنية بالمركبات النباتية، تدخل في العناية بالخصلات ومظهرها.' },
   { name: 'الأملج',             role: 'مستخلص الثمار',  image: 'ing-amla',     body: 'ثمرة معروفة في تقاليد العناية بالشعر، تضاف لدعم روتين الفروة.' },
   { name: 'زيت الخروع',         role: 'زيت نباتي',      image: 'ing-castor',   body: 'زيت كثيف يساعد على منح الخصلات ملمسا أنعم ومظهرا أكثر امتلاء.' },
   { name: 'زيت اللوز الحلو',    role: 'زيت نباتي',      image: 'ing-almond',   body: 'زيت خفيف يسهم في النعومة واللمعان الطبيعي من دون إثقال الشعر.' }
 ] %}
-{% set full_ingredients = ['مستخلص عرق السوس', 'مستخلص زهرة الكركديه', 'زيت السمسم', 'زيت الخروع', 'زيت اللوز الحلو', 'مستخلص أوراق إكليل الجبل', 'مستخلص بذور الكرز', 'مستخلص أوراق الحناء', 'مستخلص ثمار الأملج', 'مستخلص ذيل الحصان', 'زيت القرنفل العطري', 'بروتين الغليكول', 'توكوفيرول (فيتامين هـ)', 'زيت جوز الهند'] %}
+{% set full_ingredients = ['مستخلص عرق السوس', 'مستخلص زهرة الكركديه', 'زيت السمسم', 'زيت الخروع', 'زيت اللوز الحلو', 'مستخلص أوراق إكليل الجبل', 'مستخلص بذور الكرز', 'مستخلص أوراق الحناء', 'مستخلص ثمار الأملج', 'مستخلص ذيل الحصان', 'القرنفل', 'بروتين الغليكول', 'توكوفيرول (فيتامين هـ)', 'زيت جوز الهند'] %}
 {% set steps = [
   { num: 'الخطوة ٠١', title: 'رجي العبوة جيدا', body: 'رجي العبوة قبل كل استخدام حتى تمتزج الزيوت والمستخلصات جيدا.',                                   time: '١٠ ثوان' },
   { num: 'الخطوة ٠٢', title: 'وزعي ودلكي بلطف', body: 'وزعي كمية مناسبة على فروة الرأس والشعر، ودلكي الفروة بأطراف أصابعك بحركات دائرية لطيفة.',       time: 'دقيقتان' },
@@ -38,17 +46,21 @@
 ] %}
 {% set promises = [
   { t: '١٤ مكونا طبيعيا',       b: 'مزيج من المستخلصات النباتية والزيوت الطبيعية المختارة، بقائمة مكونات معلنة بالكامل.' },
-  { t: 'قوة القرنفل في كل عبوة', b: 'زيت القرنفل العطري مدعوم بإكليل الجبل والأملج والكركديه وزيوت طبيعية غنية.' },
+  { t: 'قوة القرنفل في كل عبوة', b: 'القرنفل مدعوم بإكليل الجبل والأملج والكركديه وزيوت طبيعية غنية.' },
   { t: 'تصنيع سعودي',           b: 'تركيبة طورت وصنعت في معمل سعودي وبمعايير ثابتة.' },
-  { t: 'إرجاع مجاني ١٤ يوما',   b: 'غيرت رأيك قبل فتح العبوة؟ الإرجاع مجاني وبخطوات بسيطة.' }
+  { t: 'شحن سريع يغطي الخليج', b: 'نشحن بسرعة داخل المملكة وإلى جميع دول الخليج.' }
 ] %}
 {% set faqs = [
   { q: 'لمن يناسب هذا المنتج؟', a: 'للشعر الخفيف أو الباهت، والشعر الجاف والمتطاير، ولكل من تحتاج إلى عناية وتغذية إضافية، وللباحثات عن تركيبة غنية بالمستخلصات والزيوت الطبيعية.' },
   { q: 'كيف أستخدمه؟ وهل يحتاج إلى شطف؟', a: 'نعم. رجي العبوة جيدا، ووزعي كمية مناسبة على فروة الرأس والشعر مع التدليك بلطف، ثم اتركيه من ساعة إلى ثلاث ساعات واغسليه جيدا.' },
   { q: 'كم مرة أستخدمه في الأسبوع؟', a: 'للحصول على أفضل النتائج، استخدميه من مرتين إلى ثلاث مرات أسبوعيا مع الانتظام.' },
   { q: 'متى يمكنني ملاحظة الفرق؟', a: 'يختلف ذلك بحسب طبيعة الشعر والالتزام بالروتين. مع الاستخدام المنتظم يبدو الشعر تدريجيا أكثر نعومة ولمعانا وحيوية.' },
-  { q: 'ما المكونات الرئيسية؟', a: 'مزيج من ١٤ مكونا: زيت القرنفل العطري، ومستخلصات عرق السوس والكركديه وإكليل الجبل وبذور الكرز والحناء والأملج وذيل الحصان، وزيوت السمسم والخروع واللوز الحلو وجوز الهند، مع بروتين الغليكول وفيتامين هـ.' }
+  { q: 'ما المكونات الرئيسية؟', a: 'مزيج من ١٤ مكونا: القرنفل، ومستخلصات عرق السوس والكركديه وإكليل الجبل وبذور الكرز والحناء والأملج وذيل الحصان، وزيوت السمسم والخروع واللوز الحلو وجوز الهند، مع بروتين الغليكول وفيتامين هـ.' },
+  { q: 'إلى أين تشحنون؟', a: 'نشحن بسرعة داخل المملكة وإلى جميع دول الخليج، وسعر العبوة ١٠٩ ر.س.' }
 ] %}
+{% if show_offers %}
+  {% set faqs = faqs|merge([{ q: 'ما عروض اليوم الوطني؟', a: 'عبوتان بسعر عبوة واحدة: ١٠٩ ر.س بدل ٢١٨، وعرض توفيري: ثلاث عبوات بـ ١٤٩ ر.س. العروض لفترة محدودة.' }]) %}
+{% endif %}
 
 {% block content %}
 
@@ -98,9 +110,15 @@
         </h1>
         <p class="mt-6 max-w-[46ch] text-[15px] leading-[1.95] text-ink sm:text-[17px]" data-reveal="up">{{ hero_text }}</p>
         <div class="mt-9 flex flex-col gap-3 sm:flex-row sm:items-center" data-reveal="up">
-          <a href="{{ product_url }}" class="btn-primary">اكتشفي المنتج</a>
+          <a href="{{ product_url }}" class="btn-primary" data-product-link>اكتشفي المنتج</a>
           <a href="#results" class="btn-outline">ماذا تتوقعين مع الاستمرار؟</a>
         </div>
+        {% if show_offers %}
+          <a href="#offers" class="mt-5 inline-flex items-center gap-2.5 text-[13px] text-gold-ink transition-colors hover:text-olive" data-reveal="up">
+            <span class="pill bg-olive text-gold">اليوم الوطني</span>
+            <span>عبوتان بسعر عبوة واحدة: <span class="num">١٠٩ ر.س</span> بدل <span class="num line-through">٢١٨</span></span>
+          </a>
+        {% endif %}
         <dl class="mt-11 grid max-w-xl grid-cols-3 divide-x divide-x-reverse divide-ink/12 border-t border-ink/12 pt-6" data-stagger="115" data-reveal="up">
           <div class="pl-4 sm:pl-6">
             <dt class="num h-display text-[28px] leading-none text-olive sm:text-[34px]" data-count-to="14" data-count-suffix=" مكونا"></dt>
@@ -128,7 +146,7 @@
   <div class="marquee mt-4 overflow-hidden border-y border-ink/10 bg-olive py-3.5 sm:py-4">
     <div class="marquee-track">
       <div class="flex shrink-0 items-center gap-8 pl-8" data-marquee-set>
-        {% for item in ['توصيل ١–٣ أيام داخل المملكة', 'الدفع عند الاستلام متاح', 'مستخلصات نباتية وزيوت طبيعية', 'إرجاع مجاني خلال ١٤ يوما', 'صناعة سعودية'] %}
+        {% for item in ['شحن سريع', 'نغطي جميع دول الخليج', 'العبوة بـ ١٠٩ ر.س', 'مستخلصات نباتية وزيوت طبيعية', 'صناعة سعودية'] %}
           <span class="text-[13px] text-cream/85 sm:text-sm">{{ item }}</span>
           <span class="{{ loop.index is odd ? 'text-gold' : 'text-mist' }}">◆</span>
         {% endfor %}
@@ -175,6 +193,12 @@
           <span class="eyebrow" data-reveal="down">المنتج</span>
           <h2 class="h-display mt-2.5 text-[30px] leading-tight text-olive sm:text-[40px]" data-reveal="up">معزز الشعر بالقرنفل</h2>
           <p class="mt-2 text-[14px] text-ink-soft sm:text-[15px]" data-reveal="up">رذاذ عناية بفروة الرأس والشعر · <span class="num">١٥٠ مل</span></p>
+          {% if price_label %}
+            <p class="mt-3 flex items-baseline gap-2" data-reveal="up">
+              <span class="num h-display text-[30px] leading-none text-olive">{{ price_label }}</span>
+              <span class="text-[12.5px] text-ink-soft">للعبوة</span>
+            </p>
+          {% endif %}
           <p class="mt-4 max-w-prose text-[15px] leading-[1.9] text-ink" data-reveal="up">يساعد على دعم صحة الفروة وتحسين مظهر الشعر ليبدو أكثر كثافة وحيوية ولمعانا، مع تعزيز النعومة وتقليل الهيشان. يرج جيدا قبل الاستخدام، ويترك من ساعة إلى ثلاث ساعات ثم يغسل.</p>
           <ul class="mt-5 flex flex-wrap gap-2" data-reveal="up">
             {% for c in ['الشعر الخفيف أو الباهت', 'الشعر الجاف والمتطاير', 'شعر يحتاج إلى تغذية إضافية', 'مستخلصات نباتية وزيوت طبيعية'] %}
@@ -182,17 +206,45 @@
             {% endfor %}
           </ul>
           <div class="mt-7 flex flex-col gap-3 sm:flex-row" data-reveal="up">
-            <a href="{{ product_url }}" class="btn-primary flex-1">اطلبي الآن</a>
-            <a href="{{ product_url }}" class="btn-outline sm:w-auto">كل التفاصيل</a>
+            <a href="{{ product_url }}" class="btn-primary flex-1" data-product-link>اطلبي الآن</a>
+            <a href="{{ product_url }}" class="btn-outline sm:w-auto" data-product-link>كل التفاصيل</a>
           </div>
           <p class="mt-4 flex items-start gap-2 text-[12.5px] leading-relaxed text-ink-soft" data-reveal="up">
             <i class="sicon-shipping-fast mt-0.5 shrink-0 text-gold-ink"></i>
-            <span>توصيل مجاني للطلبات فوق <span class="num">٢٠٠ ر.س</span> · الدفع عند الاستلام متاح</span>
+            <span>شحن سريع داخل المملكة وإلى جميع دول الخليج</span>
           </p>
         </div>
       </div>
     </div>
   </section>
+
+  {# ============================ OFFERS ============================ #}
+  {% if show_offers %}
+  <section id="offers" class="shell scroll-mt-24 pt-16 sm:pt-24">
+    <header class="max-w-2xl" data-stagger="80">
+      <span class="eyebrow-pill" data-reveal="down">عروض اليوم الوطني</span>
+      <h2 class="h-display text-sect mt-4 text-olive" data-reveal="up">عبوتان بسعر عبوة واحدة</h2>
+      <p class="mt-3 text-[15px] leading-relaxed text-ink-soft sm:text-[16px]" data-reveal="up">احتفالا باليوم الوطني، عرضان لفترة محدودة: عبوتان بـ <span class="num">١٠٩ ر.س</span> بدل <span class="num">٢١٨</span>، وعرض توفيري بثلاث عبوات بـ <span class="num">١٤٩ ر.س</span>.</p>
+    </header>
+    <ul class="mt-10 grid gap-4 sm:grid-cols-3 sm:gap-5" data-stagger="110">
+      {% for o in offers %}
+        <li class="card card-hover relative flex h-full flex-col p-6 pt-7 {{ o.featured ? 'border-gold/60 shadow-[0_24px_60px_-30px_rgba(107,87,31,.55)]' : '' }}" data-reveal="up">
+          {% if o.badge %}<span class="pill absolute -top-3 right-5 {{ o.featured ? 'bg-olive text-gold' : 'bg-mist-deep text-shell' }}">{{ o.badge }}</span>{% endif %}
+          <span class="text-[12.5px] tracking-wide text-ink-soft">{{ o.units }}</span>
+          <h3 class="mt-1 text-[20px] font-medium text-olive">{{ o.title }}</h3>
+          <p class="num mt-4 flex flex-wrap items-baseline gap-x-2">
+            <span class="h-display text-[40px] leading-none text-olive">{{ o.price }}</span>
+            <span class="text-[13px] text-ink-soft">ر.س</span>
+            {% if o.was %}<span class="text-[14px] text-ink-soft line-through">{{ o.was }} ر.س</span>{% endif %}
+          </p>
+          <p class="mt-3 flex-1 text-[13.5px] leading-relaxed text-ink-soft">{{ o.note }}</p>
+          <a href="{{ product_url }}" class="{{ o.featured ? 'btn-primary' : 'btn-outline' }} mt-6 w-full" data-product-link>اطلبي الآن</a>
+        </li>
+      {% endfor %}
+    </ul>
+    <p class="mt-5 text-[12px] text-ink-soft/80" data-reveal="up">العروض لفترة محدودة، وتختارين العرض المناسب من صفحة المنتج.</p>
+  </section>
+  {% endif %}
 
   {# ============================ INGREDIENTS ============================ #}
   <section id="ingredients" class="shell scroll-mt-24 pt-16 sm:pt-24">
