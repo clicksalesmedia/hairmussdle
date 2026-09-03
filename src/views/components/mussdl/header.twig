@@ -4,7 +4,8 @@
 #}
 {# Empty setting → home for now; mussdl.js re-points every [data-product-link] at the store's Mussdl product. #}
 {% set product_url = theme.settings.get('mussdl_product_url') ?: link('/') %}
-{% set offer_text  = theme.settings.get('mussdl_offer_text', '') %}
+{# Salla only hands back what the merchant saved, so the twilight.json default is repeated here. #}
+{% set offer_text  = theme.settings.get('mussdl_offer_text', 'عروض اليوم الوطني: عبوتان بـ ١٠٩ ر.س بدل ٢١٨ · ثلاث عبوات بـ ١٤٩ ر.س') %}
 {% set home = link('/') %}
 {% set show_offers = theme.settings.get('mussdl_show_offers', true) %}
 {% set nav = [{ label: 'المنتج', href: product_url, product: true }] %}
