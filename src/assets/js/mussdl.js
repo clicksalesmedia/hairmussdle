@@ -266,40 +266,85 @@
   }
 
   /* ===========================================================================
-     PRODUCT & OFFER LINKS
-     Until the merchant fills the product-URL settings, CTAs point at the home
-     page. Salla also returns canonical URLs (the store's own domain), which
-     would jump out of the salla.design preview, so every link is rebased onto
-     the host the page is served from. Offer cards (data-offer-link="1|2|3")
-     use the per-offer setting when filled, else the product whose name matches
-     the pack, else the main product.
+     LINKS — preview safe
+     Salla writes canonical URLs (the store's own domain) into theme settings and
+     API responses, and its signed preview links (identifier/version_id/expires/
+     signature) only apply to the page they open. So inside a preview a single
+     click leaves it and the store answers with its PUBLISHED theme. Every store
+     link is therefore rebased onto the host the page is served from and keeps
+     the preview parameters. On the live store this is a no-op.
      ======================================================================== */
 
+  const PREVIEW_KEYS = ['identifier', 'version_id', 'expires', 'signature', 'preview', 'draft_id'];
   const MAIN_PRODUCT_NAME = /مسدل|قرنفل|mussdl/i;
   const OFFER_PRODUCT_NAME = {
     2: /عبوتين|عبوتان|2\s*عبو|x\s*2|×\s*2|باكج\s*2|حزمة/i,
     3: /ثلاث|3\s*عبو|x\s*3|×\s*3/i
   };
 
+  const Links = (() => {
+    const cfg = window.mussdl || {};
+    const hostOf = (v) => { try { return new URL(v, location.href).host; } catch (_) { return ''; } };
+    const hosts = new Set([location.host]);
+    [cfg.productUrl, ...Object.values(cfg.offerUrls || {})].forEach((u) => { const h = hostOf(u); if (h) hosts.add(h); });
+    let base = '';
+    try { base = new URL(cfg.home || '/', location.href).pathname.replace(/\/+$/, ''); } catch (_) {}
+    const params = [];
+    const search = new URLSearchParams(location.search);
+    PREVIEW_KEYS.forEach((k) => { if (search.has(k)) params.push([k, search.get(k)]); });
+
+    const addHost = (url) => { const h = hostOf(url); if (h) hosts.add(h); };
+
+    /* Returns the href to use for a store URL, or null when it is not ours. */
+    const fix = (href) => {
+      if (!href) return null;
+      const raw = String(href).trim();
+      if (!raw || raw.startsWith('#') || /^(mailto:|tel:|javascript:|data:|blob:)/i.test(raw)) return null;
+      let u;
+      try { u = new URL(raw, location.href); } catch (_) { return null; }
+      if (!/^https?:$/.test(u.protocol)) return null;
+      if (!hosts.has(u.host)) return null;
+      if (u.host !== location.host) {
+        const path = base + u.pathname;
+        u = new URL(path + u.search + u.hash, location.origin);
+      }
+      params.forEach(([k, v]) => { if (!u.searchParams.has(k)) u.searchParams.set(k, v); });
+      return u.href;
+    };
+
+    const decorate = (a) => {
+      if (a.hasAttribute('download') || a.dataset.noPreview !== undefined) return;
+      const next = fix(a.getAttribute('href'));
+      if (next && next !== a.href) a.href = next;
+    };
+    const sweep = (root) => {
+      if (!root || root.nodeType !== 1) return;
+      if (root.matches && root.matches('a[href]')) decorate(root);
+      root.querySelectorAll && root.querySelectorAll('a[href]').forEach(decorate);
+    };
+    return { fix, sweep, addHost, active: params.length > 0 || hosts.size > 1 };
+  })();
+
+  function mountLinks() {
+    if (!Links.active) return;
+    Links.sweep(document.body);
+    /* Product cards, menus and modals arrive after hydration. */
+    new MutationObserver((records) => records.forEach((r) => r.addedNodes.forEach(Links.sweep)))
+      .observe(document.body, { childList: true, subtree: true });
+  }
+
+  /* Until the merchant fills the product-URL settings, CTAs point at the home
+     page; the Mussdl product (and each offer's pack) is then found by name. */
   function mountProductLinks() {
     const cfg = window.mussdl || {};
     const productLinks = [...document.querySelectorAll('[data-product-link]')];
     const offerLinks = [...document.querySelectorAll('[data-offer-link]')];
     if (!productLinks.length && !offerLinks.length) return;
-    const home = new URL(cfg.home || '/', location.href);
-    const base = home.pathname.replace(/\/+$/, '');
-    const rebase = (href) => {
-      try {
-        const u = new URL(href, location.href);
-        if (u.origin === location.origin) return u.href;
-        return base + u.pathname + u.search;
-      } catch (_) { return href; }
-    };
-    [...productLinks, ...offerLinks].forEach((a) => { const h = a.getAttribute('href'); if (h) a.href = rebase(h); });
+    const apply = (a, url) => { const next = Links.fix(url); if (next) a.href = next; };
     const offerUrls = cfg.offerUrls || {};
     const pendingOffers = offerLinks.filter((a) => {
       const url = offerUrls[a.dataset.offerLink];
-      if (url) { a.href = rebase(url); return false; }
+      if (url) { apply(a, url); return false; }
       return true;
     });
     const pendingProducts = cfg.productUrl ? [] : productLinks;
@@ -309,12 +354,13 @@
       salla.product.fetch({ source: 'latest' }).then((res) => {
         const items = Array.isArray(res && res.data) ? res.data : [];
         if (!items.length) return;
+        items.forEach((p) => Links.addHost(p.url));
         const main = items.find((p) => MAIN_PRODUCT_NAME.test(p.name || '')) || items[0];
-        if (main && main.url) pendingProducts.forEach((a) => { a.href = rebase(main.url); });
+        if (main && main.url) pendingProducts.forEach((a) => apply(a, main.url));
         pendingOffers.forEach((a) => {
           const re = OFFER_PRODUCT_NAME[a.dataset.offerLink];
           const match = (re && items.find((p) => re.test(p.name || ''))) || main;
-          if (match && match.url) a.href = rebase(match.url);
+          if (match && match.url) apply(a, match.url);
         });
       }).catch(() => {});
     };
@@ -426,6 +472,7 @@
   function boot() {
     mountHairBackground();
     wireHeader();
+    mountLinks();
     mountProductLinks();
     mountCollapses();
     mountCart();
