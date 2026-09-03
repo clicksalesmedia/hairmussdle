@@ -274,17 +274,46 @@
 
   function mountProductLinks() {
     const links = [...document.querySelectorAll('[data-product-link]')];
-    if (!links.length || (window.mussdl && window.mussdl.productUrl)) return;
+    if (!links.length) return;
+    // Salla returns canonical URLs (the store's own domain). While the theme is
+    // being previewed on salla.design that would jump out of the preview, so
+    // every product link is rebased onto the host the page is served from.
+    const home = new URL((window.mussdl && window.mussdl.home) || '/', location.href);
+    const base = home.pathname.replace(/\/+$/, '');
+    const rebase = (href) => {
+      try {
+        const u = new URL(href, location.href);
+        if (u.origin === location.origin) return u.href;
+        return base + u.pathname + u.search;
+      } catch (_) { return href; }
+    };
+    links.forEach((a) => { if (a.getAttribute('href')) a.href = rebase(a.getAttribute('href')); });
+    if (window.mussdl && window.mussdl.productUrl) return;
     const resolve = () => {
       if (!window.salla || !salla.product || typeof salla.product.fetch !== 'function') return;
       salla.product.fetch({ source: 'latest' }).then((res) => {
         const items = Array.isArray(res && res.data) ? res.data : [];
         const brand = items.find((p) => /مسدل|قرنفل|mussdl/i.test(p.name || '')) || items[0];
         if (!brand || !brand.url) return;
-        links.forEach((a) => { a.href = brand.url; });
+        const href = rebase(brand.url);
+        links.forEach((a) => { a.href = href; });
       }).catch(() => {});
     };
     if (window.salla && typeof salla.onReady === 'function') salla.onReady(resolve); else resolve();
+  }
+
+  /* Listing page: the sort <select> drives salla-products-list and the ?sort= param. */
+  function mountProductsList() {
+    const list = document.querySelector('[data-products-page] salla-products-list');
+    const select = document.getElementById('product-filter');
+    if (!list || !select) return;
+    const current = new URLSearchParams(location.search).get('sort');
+    if (current) { select.value = current; list.sortBy = current; }
+    select.addEventListener('change', (e) => {
+      list.sortBy = e.currentTarget.value;
+      const u = new URL(location.href); u.searchParams.set('sort', e.currentTarget.value);
+      history.replaceState(null, '', u);
+    });
   }
 
   /* ===========================================================================
@@ -295,6 +324,7 @@
     mountHairBackground();
     wireHeader();
     mountProductLinks();
+    mountProductsList();
     mountThumbs();
     mountCompare();
     mountMarquee();

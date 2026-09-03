@@ -282,6 +282,18 @@
    and these hooks reach into markup the platform renders, not ours. */
   salla-quantity-input { display: inline-flex; align-items: center; }
 
+
+  /* Listing page: Salla's built-in product card, dressed like the rest of the theme. */
+  .mussdl-products .s-product-card-entry { border-radius: var(--radius-card); border: 1px solid color-mix(in srgb, var(--color-ink) 8%, transparent); background: color-mix(in srgb, var(--color-shell) 85%, transparent); overflow: hidden; box-shadow: 0 1px 2px rgba(60,65,74,.05), 0 14px 38px -24px rgba(60,65,74,.45); transition: transform .5s var(--ease-out-soft), box-shadow .5s var(--ease-out-soft); }
+  .mussdl-products .s-product-card-entry:hover { transform: translateY(-6px); box-shadow: 0 1px 2px rgba(60,65,74,.05), 0 30px 60px -30px rgba(60,65,74,.45); }
+  .mussdl-products .s-product-card-image { background: color-mix(in srgb, var(--color-cream-deep) 50%, transparent); }
+  .mussdl-products .s-product-card-content { padding: 1rem 1.1rem 1.2rem; }
+  .mussdl-products .s-product-card-content-title, .mussdl-products .s-product-card-content-title a { font-size: 15px; font-weight: 500; color: var(--color-olive); }
+  .mussdl-products .s-product-card-content-subtitle { font-size: 13px; color: var(--color-ink-soft); }
+  .mussdl-products .s-product-card-price, .mussdl-products .s-product-card-content-main { color: var(--color-olive); font-feature-settings: "tnum"; }
+  .mussdl-products salla-button, .mussdl-products salla-add-product-button { --salla-font-family: var(--font-sans); }
+  salla-filters.card .s-filters-wrapper { background: transparent; }
+
   /* Product description from the dashboard editor may contain tables. */
   [data-testid="store-product-description"] table { width: 100%; border-collapse: collapse; margin: .75rem 0 1rem; font-size: 13.5px; line-height: 1.6; }
   [data-testid="store-product-description"] th,
