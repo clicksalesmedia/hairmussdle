@@ -58,9 +58,9 @@
   function wireHeader() {
     const host = document.querySelector('[data-site-header]');
     if (!host) return;
-    const root = host.querySelector('[data-menu-root]');
-    const scrim = host.querySelector('[data-menu-scrim]');
-    const panel = host.querySelector('[data-menu-panel]');
+    const root = document.querySelector('[data-menu-root]');
+    const scrim = root?.querySelector('[data-menu-scrim]');
+    const panel = root?.querySelector('[data-menu-panel]');
     const openBtn = host.querySelector('[data-menu-open]');
     if (root && panel) {
       const setMenu = (open) => {
@@ -73,7 +73,7 @@
         document.body.style.overflow = open ? 'hidden' : '';
       };
       openBtn?.addEventListener('click', () => setMenu(true));
-      host.querySelectorAll('[data-menu-close], [data-menu-scrim], [data-menu-link]').forEach((el) => el.addEventListener('click', () => setMenu(false)));
+      root.querySelectorAll('[data-menu-close], [data-menu-scrim], [data-menu-link]').forEach((el) => el.addEventListener('click', () => setMenu(false)));
       addEventListener('keydown', (e) => { if (e.key === 'Escape') setMenu(false); });
     }
     const bar = host.querySelector('[data-offer-bar]');
@@ -234,6 +234,8 @@
   }
 
   function mountHeroScrub() {
+    // Phones and data-saver connections keep the still image: the scrubbed clip is 3 MB.
+    if (window.matchMedia('(max-width: 639px)').matches || (navigator.connection && navigator.connection.saveData)) return;
     const vid = document.querySelector('[data-hero-video]');
     const hero = document.querySelector('[data-hero]');
     if (!vid || !hero) return;

@@ -45,7 +45,7 @@
   <div class="grid gap-8 lg:grid-cols-2 lg:gap-14" id="product-{{ product.id }}" data-buy-block>
 
     {# Gallery #}
-    <div class="lg:sticky lg:top-24 lg:self-start" data-reveal="scale" data-reveal-duration="900">
+    <div class="min-w-0 lg:sticky lg:top-24 lg:self-start" data-reveal="scale" data-reveal-duration="900">
       <figure class="relative overflow-hidden rounded-[26px] border border-ink/8 bg-shell shadow-[0_28px_70px_-42px_rgba(60,65,74,.6)]">
         {% if product.promotion_title %}<span class="pill absolute top-3 right-3 z-[2] bg-olive text-gold">{{ product.promotion_title }}</span>{% endif %}
         <img src="{{ product.image.url }}" width="1000" height="1000" fetchpriority="high" decoding="async"
@@ -63,7 +63,7 @@
     </div>
 
     {# Detail #}
-    <div data-stagger="80">
+    <div class="min-w-0" data-stagger="80">
       {% hook 'product:single.description.start' %}
 
       <div class="flex flex-wrap items-center gap-3" data-reveal="down">
@@ -93,7 +93,7 @@
       </div>
 
       {# Description from the store (merchant pastes the approved copy here) #}
-      <div data-testid="store-product-description" class="mt-4 max-w-prose text-[15px] leading-[1.9] text-ink [&_p]:mb-3 [&_ul]:list-disc [&_ul]:pr-5" data-reveal="up">
+      <div data-testid="store-product-description" class="mt-4 max-w-prose text-[15px] leading-[1.9] text-ink [overflow-wrap:anywhere] [&_p]:mb-3 [&_ul]:list-disc [&_ul]:pr-5" data-reveal="up">
         {{ product.description|replace({"&nbsp;": "\n"})|raw }}
       </div>
 
@@ -119,12 +119,12 @@
 
         {% hook 'product:single.form.end' %}
 
-        <div class="mt-6 flex flex-wrap items-stretch gap-3">
+        <div class="mt-6 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-stretch">
           {% if product.is_hidden_quantity or product.type == 'booking' %}
             <input type="hidden" value="1" name="quantity" aria-label="Quantity"/>
           {% else %}
             <salla-quantity-input data-testid="store-product-quantity" max="{{ product.max_quantity }}" value="1" name="quantity" aria-label="الكمية"
-                                  class="rounded-full border border-ink/15 bg-shell/70"></salla-quantity-input>
+                                  class="w-full justify-center rounded-full border border-ink/15 bg-shell/70 sm:w-auto"></salla-quantity-input>
           {% endif %}
 
           <salla-add-product-button
@@ -134,7 +134,7 @@
               {{ product.is_require_shipping ? 'required-shipping' : '' }}
               {{ product.has_preorder_campaign ? 'has-pre-order' : '' }}
               amount="{{ product.base_currency_price }}"
-              class="min-w-[200px] flex-1"
+              class="w-full sm:min-w-[200px] sm:flex-1"
               product-status="{{ product.status }}"
               product-type="{{ product.type }}"
               product-id="{{ product.id }}"

@@ -3,6 +3,8 @@
   with the Mussdl design. Nothing about how the cart works is changed here.
 #}
 {% extends "layouts.mussdl" %}
+{# Salla pins the summary card to the bottom on phones; keep the footer clear of it. #}
+{% block body_class %}pb-28 lg:pb-0{% endblock %}
 {% block content %}
 <div class="shell pt-8 sm:pt-12">
   <nav class="text-[12.5px] text-ink-soft" aria-label="مسار التنقل"><salla-breadcrumb></salla-breadcrumb></nav>
@@ -130,7 +132,7 @@
         {% endif %}
 
         {% hook 'cart:summary-card.start' %}
-        <div class="card p-1">
+        <div class="lg:rounded-[var(--radius-card)] lg:border lg:border-ink/8 lg:bg-shell/85 lg:p-1 lg:shadow-[0_14px_38px_-24px_rgba(60,65,74,.45)]">
           <salla-cart-summary-card data-testid="store-cart-summary"></salla-cart-summary-card>
         </div>
         {% hook 'cart:summary-card.end' %}

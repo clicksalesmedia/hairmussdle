@@ -21,21 +21,21 @@
 <header data-testid="store-header" class="sticky top-0 z-50 border-b border-ink/10 bg-cream/85 backdrop-blur" data-site-header>
 
   {% if theme.settings.get('mussdl_show_offer_bar', true) and offer_text %}
-    <div class="bg-olive text-cream" data-offer-bar>
-      <div class="shell flex items-center justify-center gap-3 py-2 text-[12.5px]">
+    <div class="relative bg-olive text-cream" data-offer-bar>
+      <div class="shell flex items-center justify-center gap-2 py-1.5 pl-10 pr-3 text-center text-[11.5px] leading-snug sm:gap-3 sm:py-2 sm:pl-12 sm:text-[12.5px]">
         <span class="text-gold">◆</span>
         <span>{{ offer_text }}</span>
-        <button type="button" class="absolute right-auto left-3 text-cream/60 hover:text-cream" data-offer-close aria-label="إغلاق">×</button>
+        <button type="button" class="absolute left-1 top-1/2 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-full text-[18px] leading-none text-cream/70 transition hover:bg-cream/10 hover:text-cream sm:left-2" data-offer-close aria-label="إغلاق">×</button>
       </div>
     </div>
   {% endif %}
 
-  <div class="shell flex h-[72px] items-center justify-between gap-4">
+  <div class="shell flex h-16 items-center justify-between gap-3 lg:h-[72px] lg:gap-4">
 
     {# Brand #}
     <a href="{{ home }}" class="group flex shrink-0 items-center" aria-label="{{ store.name }}">
       <img src="{{ 'images/mussdl/logo-olive.webp'|asset }}" alt="{{ store.name }}" width="644" height="200"
-           class="h-10 w-auto transition-opacity group-hover:opacity-80 sm:h-11" fetchpriority="high"/>
+           class="h-9 w-auto transition-opacity group-hover:opacity-80 sm:h-11" fetchpriority="high"/>
       {% if is_page('index') %}<h1 class="sr-only">{{ store.name }}</h1>{% else %}<h2 class="sr-only">{{ store.name }}</h2>{% endif %}
     </a>
 
@@ -68,8 +68,9 @@
       </button>
     </div>
   </div>
+</header>
 
-  {# Mobile drawer #}
+{# Mobile drawer — outside <header>: its backdrop-blur would otherwise trap this fixed panel inside the bar. #}
   <div id="mussdl-mobile-nav" class="fixed inset-0 z-[60] hidden" data-menu-root>
     <div class="absolute inset-0 bg-ink/40 opacity-0 transition-opacity duration-300" data-menu-scrim></div>
     <div class="absolute inset-y-0 right-0 flex w-[82%] max-w-[340px] translate-x-full flex-col bg-cream shadow-2xl
@@ -91,4 +92,4 @@
       </div>
     </div>
   </div>
-</header>
+

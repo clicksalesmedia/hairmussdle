@@ -288,6 +288,7 @@
   [data-testid="store-product-description"] td { padding: .5rem .75rem; text-align: right; vertical-align: top; border: 1px solid color-mix(in srgb, var(--color-ink) 15%, transparent); }
   [data-testid="store-product-description"] th { font-weight: 600; color: var(--color-olive); background: color-mix(in srgb, var(--color-shell) 80%, transparent); }
   [data-testid="store-product-description"] tr:nth-child(even) td { background: color-mix(in srgb, var(--color-shell) 45%, transparent); }
+  @media (max-width: 640px) { [data-testid="store-product-description"] table { display: block; overflow-x: auto; -webkit-overflow-scrolling: touch; } }
   salla-breadcrumb { font-size: 12.5px; }
   salla-breadcrumb a { color: var(--color-ink-soft); transition: color .2s; }
   salla-breadcrumb a:hover { color: var(--color-olive); }
