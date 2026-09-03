@@ -7,7 +7,7 @@
 
   | Variable                   | Type        |
   | page.title / page.slug     | string      |
-  | category, category.sub_categories | ?Category |
+  | category                   | ?Category   | (sub_categories deliberately not touched: the lookup stalls the page) |
   | filters                    | bool        |
   | sort_options[] {id,name,is_selected} |   |
   | search_query               | ?string     |
@@ -23,13 +23,6 @@
     <div class="min-w-0">
       <span class="eyebrow" data-reveal="down">{{ search_query ? 'نتائج البحث' : 'المتجر' }}</span>
       <h1 id="page-main-title" class="h-display text-sect mt-3 text-olive" data-reveal="up">{{ page.title|raw }}</h1>
-      {% if category.sub_categories|length %}
-        <ul class="mt-4 flex flex-wrap gap-2" data-reveal="up">
-          {% for sub in category.sub_categories %}
-            <li><a href="{{ sub.url }}" class="pill border border-gold/45 bg-gold/12 text-gold-ink transition hover:bg-gold/25">{{ sub.name }}</a></li>
-          {% endfor %}
-        </ul>
-      {% endif %}
     </div>
 
     {% if sort_options|length %}
