@@ -1,0 +1,214 @@
+/* ==========================================================================
+   Cart page polish — imported from tailwind.css, emitted unlayered.
+
+   Scope
+   · [data-cart-attachments]                — the cart-level attachments /
+                                              notes section under the items
+   · .theme-mussdl [data-testid^="store-cart-item-"] .mussdl-options
+                                            — the per-item option block inside
+                                              each cart item card
+   Both share the `:is(...)` prefix below. The per-item rules key off the item
+   cards rather than a `.cart` body class: that class would come from Salla's
+   `body:classes` hook and is not something this layout guarantees. The three
+   Salla cart components only exist on the cart page, so `.theme-mussdl` is
+   scope enough for their font rule.
+
+   Nothing here changes how the cart works — it only re-skins the markup Salla
+   renders for options (`.s-product-options-*`, `.s-form-control`) and uploads
+   (`salla-file-upload .s-file-upload-wrapper`), plus Raed's note/file partial.
+   ========================================================================== */
+
+/* --- The attachments section is a normal block, never pinned --------------- */
+[data-cart-attachments] {
+  position: static !important;
+  top: auto !important;
+  min-width: 0;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+}
+[data-cart-attachments] form,
+[data-cart-attachments] .s-product-options-option-content { min-width: 0; }
+
+/* Per-item block: hide it when the include rendered no elements. Tailwind's
+   `empty:hidden` needs a truly empty node and the partial leaves whitespace. */
+.theme-mussdl [data-testid^="store-cart-item-"] .mussdl-options:not(:has(*)) { display: none; }
+
+/* --- Neutralise the boxes Salla / Raed draw around option groups ----------- */
+/* Salla wraps options in a white, padded, rounded panel; Raed's partial wraps
+   weight/size-guide and note/file blocks in `bg-white p-5 rounded-md mb-5`.
+   Inside our card they should read as plain form rows. */
+:is([data-cart-attachments], .theme-mussdl [data-testid^="store-cart-item-"]) .mussdl-options .s-product-options-wrapper,
+:is([data-cart-attachments], .theme-mussdl [data-testid^="store-cart-item-"]) .mussdl-options > section {
+  margin: 0;
+  padding: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+:is([data-cart-attachments], .theme-mussdl [data-testid^="store-cart-item-"]) .mussdl-options > * + * { margin-top: 1.25rem; }
+
+/* --- Option rows: label above a full-width control ------------------------- */
+:is([data-cart-attachments], .theme-mussdl [data-testid^="store-cart-item-"]) .mussdl-options .s-product-options-option { display: block; }
+:is([data-cart-attachments], .theme-mussdl [data-testid^="store-cart-item-"]) .mussdl-options .s-product-options-option-container { margin-bottom: 1rem; }
+:is([data-cart-attachments], .theme-mussdl [data-testid^="store-cart-item-"]) .mussdl-options .s-product-options-option-container:last-child { margin-bottom: 0; }
+
+:is([data-cart-attachments], .theme-mussdl [data-testid^="store-cart-item-"]) .mussdl-options .s-product-options-option-label,
+:is([data-cart-attachments], .theme-mussdl [data-testid^="store-cart-item-"]) .mussdl-options .form-label,
+:is([data-cart-attachments], .theme-mussdl [data-testid^="store-cart-item-"]) .mussdl-options .form-label b {
+  margin: 0 0 .5rem;
+  font-family: var(--font-sans);
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.5;
+  color: var(--color-olive);
+}
+:is([data-cart-attachments], .theme-mussdl [data-testid^="store-cart-item-"]) .mussdl-options .form-label b { margin: 0; }
+:is([data-cart-attachments], .theme-mussdl [data-testid^="store-cart-item-"]) .mussdl-options .s-product-options-option-error .s-product-options-option-label { color: #b3261e; }
+
+:is([data-cart-attachments], .theme-mussdl [data-testid^="store-cart-item-"]) .mussdl-options .s-product-options-option-content {
+  margin-top: 0;
+  min-width: 0;
+  overflow: visible;           /* Salla uses `auto`, which clips the focus ring */
+}
+
+/* Controls — selects, inputs, textareas (Salla's .s-form-control and the
+   partial's .form-input textarea). */
+:is([data-cart-attachments], .theme-mussdl [data-testid^="store-cart-item-"]) .mussdl-options .s-form-control,
+:is([data-cart-attachments], .theme-mussdl [data-testid^="store-cart-item-"]) .mussdl-options .form-input {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  border-radius: .75rem;
+  border: 1px solid color-mix(in srgb, var(--color-ink) 15%, transparent);
+  background: color-mix(in srgb, var(--color-shell) 90%, transparent);
+  padding: .75rem 1rem;
+  font-family: var(--font-sans);
+  font-size: 15px;
+  line-height: 1.5;
+  color: var(--color-ink);
+  box-shadow: none;
+  transition: border-color .2s, box-shadow .2s, background-color .2s;
+}
+:is([data-cart-attachments], .theme-mussdl [data-testid^="store-cart-item-"]) .mussdl-options .s-form-control::placeholder,
+:is([data-cart-attachments], .theme-mussdl [data-testid^="store-cart-item-"]) .mussdl-options .form-input::placeholder {
+  color: color-mix(in srgb, var(--color-ink-soft) 60%, transparent);
+}
+:is([data-cart-attachments], .theme-mussdl [data-testid^="store-cart-item-"]) .mussdl-options .s-form-control:focus,
+:is([data-cart-attachments], .theme-mussdl [data-testid^="store-cart-item-"]) .mussdl-options .form-input:focus {
+  outline: none;
+  border-color: var(--color-gold);
+  background: var(--color-shell);
+  box-shadow: 0 0 0 4px rgba(191,163,84,.13);
+}
+:is([data-cart-attachments], .theme-mussdl [data-testid^="store-cart-item-"]) .mussdl-options .has-error .s-form-control,
+:is([data-cart-attachments], .theme-mussdl [data-testid^="store-cart-item-"]) .mussdl-options .s-product-options-option-error .s-form-control {
+  border-color: rgba(179,38,30,.7);
+  box-shadow: 0 0 0 4px rgba(179,38,30,.08);
+}
+:is([data-cart-attachments], .theme-mussdl [data-testid^="store-cart-item-"]) .mussdl-options textarea.s-form-control,
+:is([data-cart-attachments], .theme-mussdl [data-testid^="store-cart-item-"]) .mussdl-options textarea.form-input {
+  height: auto;                /* the partial's `h-16` is too short for a note */
+  min-height: 6.5rem;
+  resize: vertical;
+}
+
+/* --- Raed's note / file partial ------------------------------------------- */
+/* Its "add note" / "attach file" toggles need Raed's app.js (initiateCollapse),
+   this build — so the fields would show anyway, next to buttons that do
+   nothing. Show the fields directly and drop the inert toggles. */
+/* Undo the partial's `sm:grid-cols-3` label/field split and its `text-end`
+   (which is the LEFT edge in RTL). */
+:is([data-cart-attachments], .theme-mussdl [data-testid^="store-cart-item-"]) .mussdl-options > section > div { display: block; }
+:is([data-cart-attachments], .theme-mussdl [data-testid^="store-cart-item-"]) .mussdl-options > section .text-end { text-align: start; margin-top: 0; }
+:is([data-cart-attachments], .theme-mussdl [data-testid^="store-cart-item-"]) .mussdl-options > section .form-label { display: block; }
+/* Weight / size-guide rows use Raed's `.center-between`, absent from this build. */
+:is([data-cart-attachments], .theme-mussdl [data-testid^="store-cart-item-"]) .mussdl-options .center-between {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: .75rem;
+}
+:is([data-cart-attachments], .theme-mussdl [data-testid^="store-cart-item-"]) .mussdl-options .center-between .form-label { margin: 0; }
+:is([data-cart-attachments], .theme-mussdl [data-testid^="store-cart-item-"]) .mussdl-options .product-weight { font-size: 13px; color: var(--color-ink-soft); }
+
+/* --- File upload box ------------------------------------------------------- */
+:is([data-cart-attachments], .theme-mussdl [data-testid^="store-cart-item-"]) .mussdl-options salla-file-upload,
+:is([data-cart-attachments], .theme-mussdl [data-testid^="store-cart-item-"]) .mussdl-options .product-option-uploader { display: block; max-width: 100%; }
+
+:is([data-cart-attachments], .theme-mussdl [data-testid^="store-cart-item-"]) .mussdl-options .s-file-upload-wrapper {
+  border: 1.5px dashed color-mix(in srgb, var(--color-olive) 35%, transparent);
+  border-radius: 1rem;
+  padding: 1.25rem;
+  text-align: center;
+  background: color-mix(in srgb, var(--color-shell) 55%, transparent);
+  transition: background-color .2s, border-color .2s;
+}
+:is([data-cart-attachments], .theme-mussdl [data-testid^="store-cart-item-"]) .mussdl-options .s-file-upload-wrapper:hover {
+  background: var(--color-shell);
+  border-color: color-mix(in srgb, var(--color-olive) 55%, transparent);
+}
+/* Salla draws its own dashed white box and a grey panel inside; flatten them
+   so the wrapper above is the only frame. */
+:is([data-cart-attachments], .theme-mussdl [data-testid^="store-cart-item-"]) .mussdl-options .s-file-upload-wrapper .filepond--drop-label {
+  border: 0;
+  background: transparent;
+  color: var(--color-ink);
+  min-height: 0;
+}
+:is([data-cart-attachments], .theme-mussdl [data-testid^="store-cart-item-"]) .mussdl-options .s-file-upload-wrapper .filepond--drop-label label {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-size: 14px;
+  color: var(--color-ink);
+}
+:is([data-cart-attachments], .theme-mussdl [data-testid^="store-cart-item-"]) .mussdl-options .s-file-upload-wrapper .filepond--panel-root {
+  background-color: transparent !important;   /* Salla sets this !important */
+  border-radius: .75rem;
+}
+:is([data-cart-attachments], .theme-mussdl [data-testid^="store-cart-item-"]) .mussdl-options .s-file-upload-wrapper .filepond--root {
+  max-width: 100%;
+  font-family: var(--font-sans);
+}
+:is([data-cart-attachments], .theme-mussdl [data-testid^="store-cart-item-"]) .mussdl-options .s-file-upload-wrapper .filepond--label-action {
+  font-weight: 500;
+  color: var(--color-gold-ink);
+  text-decoration-color: var(--color-gold);
+}
+:is([data-cart-attachments], .theme-mussdl [data-testid^="store-cart-item-"]) .mussdl-options .s-file-upload-wrapper .filepond--item-panel { background-color: var(--color-olive); }
+:is([data-cart-attachments], .theme-mussdl [data-testid^="store-cart-item-"]) .mussdl-options .s-file-upload-hint { font-size: 12px; color: var(--color-ink-soft); }
+
+/* Placeholder (icon + text) — both Salla's and the partial's spelling. */
+:is([data-cart-attachments], .theme-mussdl [data-testid^="store-cart-item-"]) .mussdl-options .product-option-uploader-placholder,
+:is([data-cart-attachments], .theme-mussdl [data-testid^="store-cart-item-"]) .mussdl-options .s-product-options-filepond-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: .25rem;
+}
+:is([data-cart-attachments], .theme-mussdl [data-testid^="store-cart-item-"]) .mussdl-options .product-option-uploader-placholder-icon i,
+:is([data-cart-attachments], .theme-mussdl [data-testid^="store-cart-item-"]) .mussdl-options .s-product-options-filepond-placeholder-icon {
+  font-size: 1.375rem;
+  color: var(--color-olive);
+}
+:is([data-cart-attachments], .theme-mussdl [data-testid^="store-cart-item-"]) .mussdl-options .s-product-options-filepond-placeholder-icon svg { fill: var(--color-olive); }
+:is([data-cart-attachments], .theme-mussdl [data-testid^="store-cart-item-"]) .mussdl-options .profile-filepond-placholder-text {
+  font-size: 13.5px;
+  color: var(--color-ink-soft);
+}
+
+/* --- Salla cart components: brand font ------------------------------------ */
+.theme-mussdl salla-cart-coupons,
+.theme-mussdl salla-gifting,
+.theme-mussdl salla-cart-summary-card,
+.theme-mussdl salla-product-options,
+.theme-mussdl salla-file-upload {
+  --salla-font-family: var(--font-sans);
+  font-family: var(--font-sans);
+}
+
+/* --- Mobile ---------------------------------------------------------------- */
+@media (max-width: 640px) {
+  [data-cart-attachments] h2 { font-size: 16px; }
+  :is([data-cart-attachments], .theme-mussdl [data-testid^="store-cart-item-"]) .mussdl-options .s-file-upload-wrapper { padding: 1rem; }
+}

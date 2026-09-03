@@ -17,11 +17,13 @@
 {% set price_label  = theme.settings.get('mussdl_hero_price', '١٠٩ ر.س') %}
 {% set show_offers  = theme.settings.get('mussdl_show_offers', true) %}
 
-{# National Day offers (client, Sept 2026): 2 for the price of 1 (109 instead of 218), saver 3 for 149. #}
+{# National Day offers (client, Sept 2026): 2 for the price of 1 (109 instead of 218), saver 3 for 149.
+   Each offer is its own product/variant in the store: `key` selects the theme setting
+   mussdl_offer_<key>_url (empty → product_url, then resolved by name in mussdl.js). #}
 {% set offers = [
-  { units: 'عبوة واحدة', title: 'ابدئي الروتين',      price: '١٠٩', was: '',    note: 'عبوة ١٥٠ مل من معزز الشعر بالقرنفل.',      badge: '',                 featured: false },
-  { units: 'عبوتان',     title: 'عبوتان بسعر عبوة',   price: '١٠٩', was: '٢١٨', note: 'عرض اليوم الوطني: العبوة الثانية مجانا.',   badge: 'عرض اليوم الوطني', featured: true },
-  { units: 'ثلاث عبوات', title: 'العرض التوفيري',     price: '١٤٩', was: '٣٢٧', note: 'ثلاث عبوات لروتين كامل بسعر أقل.',          badge: 'عرض توفيري',       featured: false }
+  { key: 1, units: 'عبوة واحدة', title: 'ابدئي الروتين',      price: '١٠٩', was: '',    note: 'عبوة ١٥٠ مل من معزز الشعر بالقرنفل.',      badge: '',                 featured: false },
+  { key: 2, units: 'عبوتان',     title: 'عبوتان بسعر عبوة',   price: '١٠٩', was: '٢١٨', note: 'عرض اليوم الوطني: العبوة الثانية مجانا.',   badge: 'عرض اليوم الوطني', featured: true },
+  { key: 3, units: 'ثلاث عبوات', title: 'العرض التوفيري',     price: '١٤٩', was: '٣٢٧', note: 'ثلاث عبوات لروتين كامل بسعر أقل.',          badge: 'عرض توفيري',       featured: false }
 ] %}
 
 {% set benefits = [
@@ -179,11 +181,11 @@
     <div class="card overflow-hidden">
       <div class="grid lg:grid-cols-2">
         <div class="relative bg-cream-deep/50 p-4 sm:p-8 lg:p-10">
-          <div class="relative overflow-hidden rounded-[20px] border border-ink/8 bg-shell">
-            <img src="{{ 'images/mussdl/product-real.webp'|asset }}" width="600" height="900" loading="lazy" decoding="async" alt="عبوة معزز الشعر بالقرنفل من مسدل، ١٥٠ مل" class="w-full object-cover" data-hero-shot/>
+          <div class="relative aspect-square overflow-hidden rounded-[20px] border border-ink/8 bg-shell">
+            <img src="{{ 'images/mussdl/product-square.webp'|asset }}" width="1080" height="1080" loading="lazy" decoding="async" alt="عبوة معزز الشعر بالقرنفل من مسدل، ١٥٠ مل" class="h-full w-full object-cover" data-hero-shot/>
           </div>
           <ul class="mt-3 grid grid-cols-4 gap-2 sm:mt-4 sm:gap-3" data-thumbs>
-            {% for g in ['product-real', 'p-clove-angle', 'p-clove-hand', 'p-clove-detail'] %}
+            {% for g in ['product-square', 'p-clove-angle', 'p-clove-hand', 'p-clove-detail'] %}
               <li><button type="button" data-thumb="{{ ('images/mussdl/' ~ g ~ '.webp')|asset }}" class="block w-full overflow-hidden rounded-xl border transition-all duration-300 {{ loop.first ? 'border-gold' : 'border-ink/10 hover:border-gold/50' }}">
                 <img src="{{ ('images/mussdl/' ~ g ~ '.webp')|asset }}" alt="" width="250" height="250" loading="lazy" class="aspect-square w-full object-cover"/></button></li>
             {% endfor %}
@@ -228,7 +230,8 @@
     </header>
     <ul class="mt-10 grid gap-4 sm:grid-cols-3 sm:gap-5" data-stagger="110">
       {% for o in offers %}
-        <li class="card card-hover relative flex h-full flex-col p-6 pt-7 {{ o.featured ? 'border-gold/60 shadow-[0_24px_60px_-30px_rgba(107,87,31,.55)]' : '' }}" data-reveal="up">
+        {% set offer_url = theme.settings.get('mussdl_offer_' ~ o.key ~ '_url') ?: product_url %}
+        <li class="card card-hover relative flex h-full flex-col p-6 pt-7 {{ o.featured ? 'border-gold/60 shadow-[0_24px_60px_-30px_rgba(107,87,31,.55)]' : '' }}" data-offer-key="{{ o.key }}" data-reveal="up">
           {% if o.badge %}<span class="pill absolute -top-3 right-5 {{ o.featured ? 'bg-olive text-gold' : 'bg-mist-deep text-shell' }}">{{ o.badge }}</span>{% endif %}
           <span class="text-[12.5px] tracking-wide text-ink-soft">{{ o.units }}</span>
           <h3 class="mt-1 text-[20px] font-medium text-olive">{{ o.title }}</h3>
@@ -238,7 +241,7 @@
             {% if o.was %}<span class="text-[14px] text-ink-soft line-through">{{ o.was }} ر.س</span>{% endif %}
           </p>
           <p class="mt-3 flex-1 text-[13.5px] leading-relaxed text-ink-soft">{{ o.note }}</p>
-          <a href="{{ product_url }}" class="{{ o.featured ? 'btn-primary' : 'btn-outline' }} mt-6 w-full" data-product-link>اطلبي الآن</a>
+          <a href="{{ offer_url }}" class="{{ o.featured ? 'btn-primary' : 'btn-outline' }} mt-6 w-full" data-offer-link="{{ o.key }}">اطلبي الآن</a>
         </li>
       {% endfor %}
     </ul>

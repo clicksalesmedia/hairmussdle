@@ -33,6 +33,17 @@
 ] %}
 {% set whatsapp = theme.settings.get('mussdl_whatsapp') ?: store.contacts.whatsapp %}
 
+{# Short description under the price: theme setting → product.subtitle → plain-text description trimmed to 200 chars.
+   The full HTML description moves to the first accordion item so the buy button stays high on the page. #}
+{% set short_desc = (theme.settings.get('mussdl_product_short', '') ?: '')|trim %}
+{% if short_desc is empty %}{% set short_desc = (product.subtitle ?: '')|trim %}{% endif %}
+{% if short_desc is empty %}
+  {% set plain_desc = (product.description ?: '')|replace({'&nbsp;': ' ', '<': ' <'})|striptags|trim %}
+  {% set short_desc = plain_desc|slice(0, 200)|trim ~ (plain_desc|length > 200 ? '…' : '') %}
+{% endif %}
+{% set has_description = (product.description ?: '')|replace({'&nbsp;': ''})|striptags|trim is not empty
+   or '<img' in (product.description ?: '') or '<iframe' in (product.description ?: '') %}
+
 {% block body_class %}pb-24 lg:pb-0{% endblock %}
 
 {% block content %}
@@ -44,21 +55,28 @@
   {# ============================ BUY BLOCK ============================ #}
   <div class="grid gap-8 lg:grid-cols-2 lg:gap-14" id="product-{{ product.id }}" data-buy-block>
 
-    {# Gallery #}
+    {# Gallery — 1:1 main shot + horizontal thumb strip.
+       mussdl.js mountThumbs() swaps [data-main-shot] src on click of [data-thumbs] [data-thumb]
+       and toggles `border-gold` (active) / `border-ink/10` (inactive) — keep those exact classes. #}
+    {% set gallery = [] %}
+    {% for image in product.images %}
+      {% if image.type != 'video' %}{% set gallery = gallery|merge([image]) %}{% endif %}
+    {% endfor %}
     <div class="min-w-0 lg:sticky lg:top-24 lg:self-start" data-reveal="scale" data-reveal-duration="900">
-      <figure class="relative overflow-hidden rounded-[26px] border border-ink/8 bg-shell shadow-[0_28px_70px_-42px_rgba(60,65,74,.6)]">
+      <figure class="relative aspect-square w-full overflow-hidden rounded-[26px] border border-ink/8 bg-shell shadow-[0_28px_70px_-42px_rgba(60,65,74,.6)]">
         {% if product.promotion_title %}<span class="pill absolute top-3 right-3 z-[2] bg-olive text-gold">{{ product.promotion_title }}</span>{% endif %}
         <img src="{{ product.image.url }}" width="1000" height="1000" fetchpriority="high" decoding="async"
-             alt="{{ product.image.alt ?: product.name }}" class="w-full object-cover" data-main-shot/>
+             alt="{{ product.image.alt ?: product.name }}" class="h-full w-full object-cover" data-main-shot/>
       </figure>
-      {% if product.images|length > 1 %}
-        <ul class="mt-3 grid grid-cols-4 gap-2 sm:mt-4 sm:gap-3" data-thumbs>
-          {% for image in product.images %}
-            <li><button type="button" data-thumb="{{ image.url }}" aria-label="{{ image.alt ?: product.name }}"
-                        class="block w-full overflow-hidden rounded-xl border transition-all duration-300 {{ loop.first ? 'border-gold' : 'border-ink/10 hover:border-gold/50' }}">
-              <img src="{{ image.url }}" alt="" width="250" height="250" loading="lazy" decoding="async" class="aspect-square w-full object-cover"/></button></li>
+      {% if product.images|length > 1 and gallery|length > 1 %}
+        <div class="mussdl-thumbs no-bar mt-3 flex w-full snap-x snap-mandatory gap-2.5 overflow-x-auto py-1 sm:mt-4" data-thumbs role="group" aria-label="صور المنتج">
+          {% for image in gallery %}
+            <button type="button" data-thumb="{{ image.url }}" aria-label="{{ image.alt ?: product.name }}"
+                    class="mussdl-thumb h-[72px] w-[72px] shrink-0 snap-start overflow-hidden rounded-2xl border-2 bg-shell transition-all duration-300 hover:border-gold/50 sm:h-20 sm:w-20 {{ loop.first ? 'border-gold' : 'border-ink/10' }}">
+              <img src="{{ image.url }}" alt="" width="160" height="160" loading="lazy" decoding="async" class="h-full w-full object-cover"/>
+            </button>
           {% endfor %}
-        </ul>
+        </div>
       {% endif %}
     </div>
 
@@ -74,7 +92,7 @@
       </div>
 
       <h1 data-testid="store-product-title" class="h-display mt-3 text-[32px] leading-tight text-olive sm:text-[46px]" data-reveal="up">{{ product.name }}</h1>
-      {% if product.subtitle %}<p class="mt-2 text-[14px] text-ink-soft sm:text-[15px]" data-reveal="up">{{ product.subtitle }}</p>{% endif %}
+      {% if product.subtitle and product.subtitle|trim != short_desc %}<p class="mt-2 text-[14px] text-ink-soft sm:text-[15px]" data-reveal="up">{{ product.subtitle }}</p>{% endif %}
 
       {# Price #}
       <div data-testid="store-product-price" class="mt-4 flex flex-wrap items-baseline gap-3" data-reveal="up">
@@ -92,10 +110,15 @@
         <div data-testid="store-product-out-of-stock" class="out-of-stock hidden text-[14px] font-semibold text-red-700">{{ trans('pages.products.out_of_stock') }}</div>
       </div>
 
-      {# Description from the store (merchant pastes the approved copy here) #}
-      <div data-testid="store-product-description" class="mt-4 max-w-prose text-[15px] leading-[1.9] text-ink [overflow-wrap:anywhere] [&_p]:mb-3 [&_ul]:list-disc [&_ul]:pr-5" data-reveal="up">
-        {{ product.description|replace({"&nbsp;": "\n"})|raw }}
-      </div>
+      {# Short description (setting → subtitle → trimmed description). The full text is the first accordion item below. #}
+      {% if short_desc is not empty %}
+        <div class="mt-4 max-w-prose" data-reveal="up">
+          <p class="text-[15px] leading-relaxed text-ink [overflow-wrap:anywhere]">{{ short_desc }}</p>
+          {% if has_description %}
+            <a href="#product-description" class="mt-1.5 inline-block text-[13px] font-medium text-gold-ink underline decoration-gold/60 underline-offset-4 transition-colors hover:text-olive">الوصف الكامل</a>
+          {% endif %}
+        </div>
+      {% endif %}
 
       <ul class="mt-5 flex flex-wrap gap-2" data-reveal="up">
         {% for c in ['الشعر الخفيف أو الباهت', 'الشعر الجاف والمتطاير', 'شعر يحتاج إلى تغذية إضافية'] %}
@@ -114,7 +137,7 @@
 
         {# Options — e.g. the pack size (عبوة / عبوتان / ثلاث) configured in the dashboard #}
         <div class="mussdl-options">
-          {% include 'pages.partials.product.options' %}
+          {% include 'pages.partials.product.options' with { show_notes: false } %}
         </div>
 
         {% hook 'product:single.form.end' %}
@@ -149,6 +172,13 @@
             <span>{{ product.add_to_cart_label }}</span>
           </salla-add-product-button>
         </div>
+
+        {# Notes / attachments land here (JS moves any option block with a textarea, salla-file-upload or
+           input[type=file] into it) so they never sit above the buy row. Keep the element empty: `empty:hidden`. #}
+        {# Notes & attachments sit below the buy buttons, still inside the form. #}
+        {% if product.can_add_note or product.can_upload_file %}
+          <div class="mt-5" data-notes-slot>{% include 'pages.partials.product.notes' %}</div>
+        {% endif %}
       </form>
 
       {# Reassurance #}
@@ -160,14 +190,22 @@
         {% endif %}
       </ul>
 
-      {# Accordion #}
+      {# Accordion — the store's full description first (HTML, |raw), then the editorial details #}
+      {% set accordion = has_description ? [{ t: 'وصف المنتج', html: product.description, id: 'product-description' }]|merge(details) : details %}
       <div class="mt-8 divide-y divide-ink/12 border-y border-ink/12" id="how">
-        {% for d in details %}
-          <details class="group py-4" {{ loop.first ? 'open' : '' }}>
+        {% for d in accordion %}
+          <details class="group scroll-mt-28 py-4" {{ loop.first ? 'open' : '' }}{% if d.id is defined %} id="{{ d.id }}"{% endif %}>
             <summary class="flex cursor-pointer list-none items-center justify-between gap-4 text-[15px] font-medium text-olive marker:hidden">
               {{ d.t }}<span class="flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-ink/15 text-ink-soft transition-transform duration-300 group-open:rotate-45">+</span>
             </summary>
-            <p class="mt-3 max-w-prose text-[14px] leading-[1.9] text-ink-soft">{{ d.b }}</p>
+            {% if d.html is defined %}
+              {# Merchant HTML from the dashboard editor; tables inside are styled via the data-testid hook #}
+              <div data-testid="store-product-description" class="mt-4 max-w-prose text-[15px] leading-[1.9] text-ink [overflow-wrap:anywhere] [&_p]:mb-3 [&_p:last-child]:mb-0 [&_ul]:list-disc [&_ul]:pr-5">
+                {{ d.html|replace({"&nbsp;": "\n"})|raw }}
+              </div>
+            {% else %}
+              <p class="mt-3 max-w-prose text-[14px] leading-[1.9] text-ink-soft">{{ d.b }}</p>
+            {% endif %}
           </details>
         {% endfor %}
       </div>

@@ -1,0 +1,52 @@
+{#
+  Notes & attachments ("المرفقات"). Raed rendered this inside the options
+  partial with collapse buttons that only worked with Raed's app.js; this
+  version is styled for Mussdl and toggled by mussdl.js ([data-collapse-toggle]).
+  Included from partials/product/options.twig unless `show_notes` is false;
+  the product page renders it on its own below the buy buttons.
+  `product` may be a cart item (then product.id is the cart item id).
+#}
+{% if product.can_add_note or product.can_upload_file %}
+  <div class="mussdl-notes rounded-2xl border border-ink/10 bg-shell/60 p-4 sm:p-5" data-notes>
+    <div class="flex flex-wrap items-center justify-between gap-3">
+      <p class="text-[12px] font-medium tracking-[.18em] text-gold-ink">{{ trans('pages.products.attachments') }}</p>
+      <div class="flex flex-wrap gap-2">
+        {% if product.can_add_note %}
+          <button type="button" data-testid="store-product-add-note" data-collapse-toggle="note_{{ product.id }}"
+                  aria-controls="note_{{ product.id }}" aria-expanded="{{ product.notes ? 'true' : 'false' }}"
+                  class="pill cursor-pointer border border-ink/15 bg-shell text-ink transition hover:border-gold hover:text-olive aria-expanded:border-olive aria-expanded:bg-olive aria-expanded:text-cream">
+            <i class="sicon-chat-conversation-alt"></i><span>{{ trans('pages.products.add_note') }}</span>
+          </button>
+        {% endif %}
+        {% if product.can_upload_file %}
+          <button type="button" data-testid="store-product-attach-file" data-collapse-toggle="file_{{ product.id }}"
+                  aria-controls="file_{{ product.id }}" aria-expanded="{{ product.attachments|length ? 'true' : 'false' }}"
+                  class="pill cursor-pointer border border-ink/15 bg-shell text-ink transition hover:border-gold hover:text-olive aria-expanded:border-olive aria-expanded:bg-olive aria-expanded:text-cream">
+            <i class="sicon-paperclip"></i><span>{{ trans('pages.products.add_file') }}</span>
+          </button>
+        {% endif %}
+      </div>
+    </div>
+
+    {% if product.can_add_note %}
+      <div class="mt-4 {{ product.notes ? '' : 'hidden' }}" id="note_{{ product.id }}" data-collapse>
+        <textarea class="field min-h-[96px]" name="notes" rows="4"
+                  placeholder="{{ trans('pages.products.notes_placeholder') }}">{{ product.notes }}</textarea>
+      </div>
+    {% endif %}
+
+    {% if product.can_upload_file %}
+      <div class="mt-4 {{ product.attachments|length ? '' : 'hidden' }}" id="file_{{ product.id }}" data-collapse>
+        <salla-file-upload accept="image/png, image/jpeg, image/jpg, image/gif, video/*, application/pdf"
+                           class="product-option-uploader block"
+                           {% if is_page('cart') %}files="{{ product.attachments|json_encode }}" cart-item-id="{{ product.id }}"{% endif %}>
+          <div class="product-option-uploader-placholder flex flex-col items-center gap-2 rounded-2xl border border-dashed border-olive/35 px-4 py-6 text-center text-[13px] text-ink-soft transition hover:bg-shell">
+            <span class="product-option-uploader-placholder-icon flex h-10 w-10 items-center justify-center rounded-full bg-olive text-gold"><i class="sicon-camera"></i></span>
+            <p class="profile-filepond-placholder-text">{{ trans('common.uploader.drag_and_drop') }}</p>
+            <span class="filepond--label-action cursor-pointer text-olive underline">{{ trans('common.uploader.browse') }}</span>
+          </div>
+        </salla-file-upload>
+      </div>
+    {% endif %}
+  </div>
+{% endif %}

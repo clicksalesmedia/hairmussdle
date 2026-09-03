@@ -164,6 +164,47 @@
         },
         {
             "type": "string",
+            "format": "textarea",
+            "id": "mussdl_product_short",
+            "label": "وصف قصير بجانب صور المنتج",
+            "description": "سطران إلى ثلاثة تظهر تحت السعر؛ الوصف الكامل من لوحة التحكم يظهر أسفل الصفحة. إذا ترك فارغا يُستخدم العنوان الفرعي للمنتج",
+            "value": "",
+            "required": false,
+            "icon": "sicon-settings",
+            "maxLength": 240
+        },
+        {
+            "type": "string",
+            "format": "text",
+            "id": "mussdl_offer_1_url",
+            "label": "رابط عرض العبوة الواحدة",
+            "description": "رابط صفحة المنتج أو الخيار الخاص بهذا العرض. إذا ترك فارغا يستخدم رابط المنتج",
+            "value": "",
+            "required": false,
+            "icon": "sicon-settings"
+        },
+        {
+            "type": "string",
+            "format": "text",
+            "id": "mussdl_offer_2_url",
+            "label": "رابط عرض العبوتين",
+            "description": "رابط المنتج/الخيار الخاص بعرض عبوتين بـ ١٠٩. إذا ترك فارغا يحاول الثيم إيجاده بالاسم",
+            "value": "",
+            "required": false,
+            "icon": "sicon-settings"
+        },
+        {
+            "type": "string",
+            "format": "text",
+            "id": "mussdl_offer_3_url",
+            "label": "رابط عرض ثلاث العبوات",
+            "description": "رابط المنتج/الخيار الخاص بعرض ٣ عبوات بـ ١٤٩. إذا ترك فارغا يحاول الثيم إيجاده بالاسم",
+            "value": "",
+            "required": false,
+            "icon": "sicon-settings"
+        },
+        {
+            "type": "string",
             "format": "text",
             "id": "mussdl_whatsapp",
             "label": "رقم واتساب للدعم",

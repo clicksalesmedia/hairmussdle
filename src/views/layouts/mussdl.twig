@@ -21,7 +21,12 @@
         window.mussdl = {
             home:       {{ link('/')|json_encode|raw }},
             productUrl: {{ theme.settings.get('mussdl_product_url', '')|json_encode|raw }},
-            whatsapp:   {{ theme.settings.get('mussdl_whatsapp', '')|json_encode|raw }}
+            whatsapp:   {{ theme.settings.get('mussdl_whatsapp', '')|json_encode|raw }},
+            offerUrls: {
+                "1": {{ theme.settings.get('mussdl_offer_1_url', '')|json_encode|raw }},
+                "2": {{ theme.settings.get('mussdl_offer_2_url', '')|json_encode|raw }},
+                "3": {{ theme.settings.get('mussdl_offer_3_url', '')|json_encode|raw }}
+            }
         };
     </script>
 

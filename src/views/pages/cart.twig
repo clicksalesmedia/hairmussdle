@@ -61,7 +61,7 @@
               </div>
             </div>
 
-            <div class="mussdl-options">{% include 'pages.partials.product.options' with {product: item} %}</div>
+            <div class="mussdl-options mt-4 border-t border-ink/10 pt-4 empty:hidden">{% include 'pages.partials.product.options' with {product: item} %}</div>
 
             <span class="absolute top-3 left-3">
               <salla-button data-testid="store-cart-delete-item" type="button" shape="icon" size="small" color="danger" class="btn--delete" aria-label="Remove from the cart"
@@ -79,16 +79,32 @@
         </div>
       {% endfor %}
 
+      {#
+        Cart-level options Salla can require (attachments / notes). Its own
+        section, well below the item cards and inside this column — never in
+        the sticky summary. `.cart-options` stays on the wrapper: cart.js
+        removes it when the cart empties and iterates `.cart-options form`.
+      #}
       {% if cart.options|length %}
-        <div class="cart-options">
-          {% for product_option in cart.options %}
-            <form class="relative first:pt-5" onchange="salla.form.onChange('cart.updateItem', event)" id="item-{{ product_option.id }}">
-              <input type="hidden" name="id" value="{{ product_option.id }}">
-              <input type="hidden" name="quantity" value="{{ product_option.quantity }}">
-              {% include 'pages.partials.product.options' with { product: product_option } %}
-            </form>
-          {% endfor %}
-        </div>
+        <section class="cart-options card mt-10 min-w-0 p-5 sm:p-6" data-cart-attachments>
+          <div class="mb-5 flex flex-wrap items-start gap-4 border-b border-ink/10 pb-5">
+            <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-olive text-gold"><i class="sicon-paperclip"></i></span>
+            <div class="min-w-0 flex-1">
+              <span class="eyebrow">خيارات الطلب</span>
+              <h2 class="mt-1 text-[17px] font-medium text-olive">المرفقات والملاحظات</h2>
+              <p class="mt-1 text-[13px] leading-relaxed text-ink-soft">أضيفي أي ملاحظات أو ملفات يحتاجها طلبك قبل إتمام الشراء.</p>
+            </div>
+          </div>
+          <div class="divide-y divide-ink/10">
+            {% for product_option in cart.options %}
+              <form class="relative py-4 first:pt-0 last:pb-0" onchange="salla.form.onChange('cart.updateItem', event)" id="item-{{ product_option.id }}">
+                <input type="hidden" name="id" value="{{ product_option.id }}">
+                <input type="hidden" name="quantity" value="{{ product_option.quantity }}">
+                <div class="mussdl-options">{% include 'pages.partials.product.options' with { product: product_option } %}</div>
+              </form>
+            {% endfor %}
+          </div>
+        </section>
       {% endif %}
 
       <salla-offer data-testid="store-cart-offer"></salla-offer>
@@ -144,6 +160,3 @@
 </div>
 {% endblock %}
 
-{% block scripts %}
-  <script defer src="{{ 'checkout.js' | asset }}"></script>
-{% endblock %}
