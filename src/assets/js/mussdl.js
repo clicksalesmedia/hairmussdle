@@ -367,6 +367,28 @@
     if (window.salla && typeof salla.onReady === 'function') salla.onReady(resolve); else resolve();
   }
 
+  /* Offer cards use the same Salla product with a quantity-based promotion.
+     Preselect the requested pack on the product page; the cart remains the
+     source of truth for the actual discount. */
+  function mountOfferSelection() {
+    const params = new URLSearchParams(location.search);
+    const quantity = Number(params.get('quantity'));
+    if (![1, 2, 3].includes(quantity)) return;
+    const input = document.querySelector('salla-quantity-input[name="quantity"]');
+    if (!input) return;
+    const max = Number(input.getAttribute('max')) || quantity;
+    const next = Math.min(quantity, max);
+    const apply = () => {
+      input.setAttribute('value', String(next));
+      if (typeof input.setValue === 'function') input.setValue(next, false);
+      else input.value = next;
+    };
+    apply();
+    if (window.customElements && typeof customElements.whenDefined === 'function') {
+      customElements.whenDefined('salla-quantity-input').then(apply).catch(() => {});
+    }
+  }
+
   /* Listing page: the sort <select> drives salla-products-list and the ?sort= param. */
   function mountProductsList() {
     const list = document.querySelector('[data-products-page] salla-products-list');
@@ -474,6 +496,7 @@
     wireHeader();
     mountLinks();
     mountProductLinks();
+    mountOfferSelection();
     mountCollapses();
     mountCart();
     mountProductsList();

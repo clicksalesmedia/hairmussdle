@@ -130,7 +130,7 @@
       <salla-installment data-testid="store-product-installment" price="{{ product.price }}" class="mt-4 block"></salla-installment>
 
       {# ---------- Salla add-to-cart form ---------- #}
-      <form data-testid="store-product-form" class="form product-form mt-8" enctype="multipart/form-data" method="post"
+      <form id="buy" data-testid="store-product-form" class="form product-form scroll-mt-28 mt-8" enctype="multipart/form-data" method="post"
             onsubmit="return salla.form.onSubmit('cart.addItem', event)" data-reveal="up">
         <input type="hidden" name="id" value="{{ product.id }}">
         {% hook 'product:single.form.start' %}

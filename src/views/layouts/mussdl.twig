@@ -5,6 +5,9 @@
   fight: Raed's stylesheet stays on the pages it still owns (customer account,
   orders, blog, brands, product listing).
 #}
+{% import 'components.mussdl.links' as mussdl_links %}
+{% set product_path = 'معزز-النمو-بالقرنفل/p2020016513' %}
+{% set product_url = mussdl_links.store_url(theme.settings.get('mussdl_product_url'), product_path)|trim %}
 <!DOCTYPE html>
 <html lang="{{ language.code }}" dir="{{ theme.is_rtl ? 'rtl' : 'ltr' }}">
 <head>
@@ -20,12 +23,12 @@
         {# `raw`: Twig would otherwise HTML-escape the quotes json_encode emits and break the script. #}
         window.mussdl = {
             home:       {{ link('/')|json_encode|raw }},
-            productUrl: {{ theme.settings.get('mussdl_product_url', '')|json_encode|raw }},
+            productUrl: {{ product_url|json_encode|raw }},
             whatsapp:   {{ theme.settings.get('mussdl_whatsapp', '')|json_encode|raw }},
             offerUrls: {
-                "1": {{ theme.settings.get('mussdl_offer_1_url', '')|json_encode|raw }},
-                "2": {{ theme.settings.get('mussdl_offer_2_url', '')|json_encode|raw }},
-                "3": {{ theme.settings.get('mussdl_offer_3_url', '')|json_encode|raw }}
+                "1": {{ mussdl_links.store_url(theme.settings.get('mussdl_offer_1_url'), product_path, 'quantity=1&offer=1', 'buy')|trim|json_encode|raw }},
+                "2": {{ mussdl_links.store_url(theme.settings.get('mussdl_offer_2_url'), product_path, 'quantity=2&offer=2', 'buy')|trim|json_encode|raw }},
+                "3": {{ mussdl_links.store_url(theme.settings.get('mussdl_offer_3_url'), product_path, 'quantity=3&offer=3', 'buy')|trim|json_encode|raw }}
             }
         };
     </script>

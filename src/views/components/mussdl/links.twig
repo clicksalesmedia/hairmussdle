@@ -1,0 +1,39 @@
+{#
+  Store-local URL builder.
+
+  Salla saves theme URL settings as canonical mussdl.com URLs. Those URLs leave
+  the salla.design draft when clicked, so the product page falls back to the
+  published theme. Convert known Mussdl/store-preview origins back to a path and
+  let Salla's link() helper rebuild the correct URL for the current storefront.
+#}
+{% macro store_url(value, fallback_path, query = '', fragment = '') %}
+  {%- set raw = (value ?: '')|trim -%}
+  {%- set path = raw|replace({
+    'https://www.mussdl.com/': '',
+    'http://www.mussdl.com/': '',
+    'https://mussdl.com/': '',
+    'http://mussdl.com/': '',
+    'https://salla.design/mussdl/': '',
+    'http://salla.design/mussdl/': ''
+  })|split('?')|first|split('#')|first|trim('/') -%}
+  {# Keep the configured product id but use the readable local slug. This also
+     avoids double-encoding a percent-encoded Arabic slug saved by the editor. #}
+  {%- if '/p' in path -%}
+    {%- set product_id = path|split('/p')|last|split('/')|first -%}
+    {%- set path = fallback_path|split('/p')|first ~ '/p' ~ product_id -%}
+  {%- endif -%}
+  {%- if path is empty or '://' in path -%}
+    {%- set path = fallback_path|trim('/') -%}
+  {%- endif -%}
+  {%- set url = link(path) -%}
+  {%- if query -%}
+    {%- set url = url ~ '?' ~ query -%}
+  {%- endif -%}
+  {%- if 'salla.design' in url -%}
+    {%- set url = url ~ (query ? '&' : '?') ~ 'preview=true' -%}
+  {%- endif -%}
+  {%- if fragment -%}
+    {%- set url = url ~ '#' ~ fragment -%}
+  {%- endif -%}
+  {{- url -}}
+{% endmacro %}

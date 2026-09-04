@@ -5,7 +5,9 @@
 #}
 {% extends "layouts.mussdl" %}
 
-{% set product_url  = theme.settings.get('mussdl_product_url') ?: link('/') %}
+{% import 'components.mussdl.links' as mussdl_links %}
+{% set product_path = 'معزز-النمو-بالقرنفل/p2020016513' %}
+{% set product_url  = mussdl_links.store_url(theme.settings.get('mussdl_product_url'), product_path)|trim %}
 {% set hero_title   = theme.settings.get('mussdl_hero_title', 'معزز الشعر') %}
 {% set hero_accent  = theme.settings.get('mussdl_hero_accent', 'بالقرنفل') %}
 {% set hero_text    = theme.settings.get('mussdl_hero_text', 'تركيبة غنية بمزيج من المستخلصات النباتية والزيوت الطبيعية، صممت لدعم صحة فروة الرأس وتحسين مظهر الشعر ليبدو أكثر كثافة وحيوية ولمعانا، مع نعومة أكبر وهيشان أقل.') %}
@@ -17,9 +19,8 @@
 {% set price_label  = theme.settings.get('mussdl_hero_price', '١٠٩ ر.س') %}
 {% set show_offers  = theme.settings.get('mussdl_show_offers', true) %}
 
-{# National Day offers (client, Sept 2026): 2 for the price of 1 (109 instead of 218), saver 3 for 149.
-   Each offer is its own product/variant in the store: `key` selects the theme setting
-   mussdl_offer_<key>_url (empty → product_url, then resolved by name in mussdl.js). #}
+{# National Day offers (client, Sept 2026): quantity-based Salla promotions on
+   the main product. `key` is both the offer setting suffix and selected quantity. #}
 {% set offers = [
   { key: 1, units: 'عبوة واحدة', title: 'ابدئي الروتين',      price: '١٠٩', was: '',    note: 'عبوة ١٥٠ مل من معزز الشعر بالقرنفل.',      badge: '',                 featured: false },
   { key: 2, units: 'عبوتان',     title: 'عبوتان بسعر عبوة',   price: '١٠٩', was: '٢١٨', note: 'عرض اليوم الوطني: العبوة الثانية مجانا.',   badge: 'عرض اليوم الوطني', featured: true },
@@ -230,7 +231,7 @@
     </header>
     <ul class="mt-10 grid gap-4 sm:grid-cols-3 sm:gap-5" data-stagger="110">
       {% for o in offers %}
-        {% set offer_url = theme.settings.get('mussdl_offer_' ~ o.key ~ '_url') ?: product_url %}
+        {% set offer_url = mussdl_links.store_url(theme.settings.get('mussdl_offer_' ~ o.key ~ '_url'), product_path, 'quantity=' ~ o.key ~ '&offer=' ~ o.key, 'buy')|trim %}
         <li class="card card-hover relative flex h-full flex-col p-6 pt-7 {{ o.featured ? 'border-gold/60 shadow-[0_24px_60px_-30px_rgba(107,87,31,.55)]' : '' }}" data-offer-key="{{ o.key }}" data-reveal="up">
           {% if o.badge %}<span class="pill absolute -top-3 right-5 {{ o.featured ? 'bg-olive text-gold' : 'bg-mist-deep text-shell' }}">{{ o.badge }}</span>{% endif %}
           <span class="text-[12.5px] tracking-wide text-ink-soft">{{ o.units }}</span>
@@ -398,4 +399,3 @@
 
   {% hook 'home:end' %}
 {% endblock %}
-

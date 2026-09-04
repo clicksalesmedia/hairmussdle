@@ -1,5 +1,7 @@
 {# Mussdl footer: brand column, store menu, Salla contacts/social/payments. #}
-{% set product_url = theme.settings.get('mussdl_product_url') ?: link('/') %}
+{% import 'components.mussdl.links' as mussdl_links %}
+{% set product_path = 'معزز-النمو-بالقرنفل/p2020016513' %}
+{% set product_url = mussdl_links.store_url(theme.settings.get('mussdl_product_url'), product_path)|trim %}
 {% set home = link('/') %}
 <footer data-testid="store-footer" class="mt-24 bg-olive text-cream">
   <div class="shell grid gap-10 py-14 sm:py-16 md:grid-cols-2 lg:grid-cols-4 lg:gap-8">

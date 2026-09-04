@@ -3,6 +3,9 @@
   with the Mussdl design. Nothing about how the cart works is changed here.
 #}
 {% extends "layouts.mussdl" %}
+{% import 'components.mussdl.links' as mussdl_links %}
+{% set product_path = 'معزز-النمو-بالقرنفل/p2020016513' %}
+{% set product_url = mussdl_links.store_url(theme.settings.get('mussdl_product_url'), product_path)|trim %}
 {# Salla pins the summary card to the bottom on phones; keep the footer clear of it. #}
 {% block body_class %}pb-28 lg:pb-0{% endblock %}
 {% block content %}
@@ -75,7 +78,7 @@
         <div data-testid="store-cart-empty" class="card flex flex-col items-center gap-4 p-10 text-center">
           <i class="sicon-shopping-bag text-4xl text-ink-soft"></i>
           <p class="text-[16px] text-ink">{{ trans('pages.cart.empty_cart') }}</p>
-          <a data-testid="store-cart-back-home" href="{{ theme.settings.get('mussdl_product_url') ?: link('/') }}" class="btn-primary" data-product-link>تسوقي المنتج</a>
+          <a data-testid="store-cart-back-home" href="{{ product_url }}" class="btn-primary" data-product-link>تسوقي المنتج</a>
         </div>
       {% endfor %}
 
@@ -159,4 +162,3 @@
   </div>
 </div>
 {% endblock %}
-
