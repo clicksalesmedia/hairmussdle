@@ -5,9 +5,9 @@
 #}
 {% extends "layouts.mussdl" %}
 
-{% import 'components.mussdl.links' as mussdl_links %}
 {% set product_path = 'معزز-النمو-بالقرنفل/p2020016513' %}
-{% set product_url  = mussdl_links.store_url(theme.settings.get('mussdl_product_url'), product_path)|trim %}
+{% set product_url %}{% include 'components.mussdl.store-url' with { value: theme.settings.get('mussdl_product_url'), fallback_path: product_path } %}{% endset %}
+{% set product_url = product_url|trim %}
 {% set hero_title   = theme.settings.get('mussdl_hero_title', 'معزز الشعر') %}
 {% set hero_accent  = theme.settings.get('mussdl_hero_accent', 'بالقرنفل') %}
 {% set hero_text    = theme.settings.get('mussdl_hero_text', 'تركيبة غنية بمزيج من المستخلصات النباتية والزيوت الطبيعية، صممت لدعم صحة فروة الرأس وتحسين مظهر الشعر ليبدو أكثر كثافة وحيوية ولمعانا، مع نعومة أكبر وهيشان أقل.') %}
@@ -231,7 +231,8 @@
     </header>
     <ul class="mt-10 grid gap-4 sm:grid-cols-3 sm:gap-5" data-stagger="110">
       {% for o in offers %}
-        {% set offer_url = mussdl_links.store_url(theme.settings.get('mussdl_offer_' ~ o.key ~ '_url'), product_path, 'quantity=' ~ o.key ~ '&offer=' ~ o.key, 'buy')|trim %}
+        {% set offer_url %}{% include 'components.mussdl.store-url' with { value: theme.settings.get('mussdl_offer_' ~ o.key ~ '_url'), fallback_path: product_path, query: 'quantity=' ~ o.key ~ '&offer=' ~ o.key, fragment: 'buy' } %}{% endset %}
+        {% set offer_url = offer_url|trim %}
         <li class="card card-hover relative flex h-full flex-col p-6 pt-7 {{ o.featured ? 'border-gold/60 shadow-[0_24px_60px_-30px_rgba(107,87,31,.55)]' : '' }}" data-offer-key="{{ o.key }}" data-reveal="up">
           {% if o.badge %}<span class="pill absolute -top-3 right-5 {{ o.featured ? 'bg-olive text-gold' : 'bg-mist-deep text-shell' }}">{{ o.badge }}</span>{% endif %}
           <span class="text-[12.5px] tracking-wide text-ink-soft">{{ o.units }}</span>

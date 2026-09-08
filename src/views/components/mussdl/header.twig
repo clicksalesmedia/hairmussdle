@@ -2,9 +2,9 @@
   Mussdl header. Static brand navigation (single-product store) plus Salla's
   own cart summary and account menu, which handle the live state.
 #}
-{% import 'components.mussdl.links' as mussdl_links %}
 {% set product_path = 'معزز-النمو-بالقرنفل/p2020016513' %}
-{% set product_url = mussdl_links.store_url(theme.settings.get('mussdl_product_url'), product_path)|trim %}
+{% set product_url %}{% include 'components.mussdl.store-url' with { value: theme.settings.get('mussdl_product_url'), fallback_path: product_path } %}{% endset %}
+{% set product_url = product_url|trim %}
 {# Salla only hands back what the merchant saved, so the twilight.json default is repeated here. #}
 {% set offer_text  = theme.settings.get('mussdl_offer_text', 'عروض اليوم الوطني: عبوتان بـ ١٠٩ ر.س بدل ٢١٨ · ثلاث عبوات بـ ١٤٩ ر.س') %}
 {% set home = link('/') %}

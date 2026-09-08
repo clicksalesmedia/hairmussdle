@@ -1,0 +1,45 @@
+{#
+  Store-local URL builder.
+
+  Salla's Twig sandbox rejects `{% import %}` / `{% macro %}` ("The use of
+  "import" is disabled"), so this is an include partial. Capture its output:
+
+    {% set url %}{% include 'components.mussdl.store-url' with {
+      value: theme.settings.get('mussdl_offer_2_url'),
+      fallback_path: 'slug/p123',
+      query: 'quantity=2&offer=2',
+      fragment: 'buy'
+    } %}{% endset %}
+
+  Merchants paste canonical links (https://mussdl.com/…) into the settings;
+  those leave the preview host and drop the preview signature, so only the
+  path is kept and rebuilt with link() (host-aware). A missing or foreign
+  value falls back to `fallback_path`. Output is raw and has no whitespace.
+#}
+{%- set raw_value = (value|default('') ?: '')|trim -%}
+{%- set query = query|default('') -%}
+{%- set fragment = fragment|default('') -%}
+{%- set path = raw_value
+  |replace({
+    'https://www.mussdl.com/': '',
+    'http://www.mussdl.com/': '',
+    'https://mussdl.com/': '',
+    'http://mussdl.com/': '',
+    'https://salla.design/mussdl/': '',
+    'http://salla.design/mussdl/': ''
+  })
+  |split('?')|first
+  |split('#')|first
+  |trim('/') -%}
+{%- if '/p' in path -%}
+  {%- set product_id = path|split('/p')|last|split('/')|first -%}
+  {%- set path = fallback_path|split('/p')|first ~ '/p' ~ product_id -%}
+{%- endif -%}
+{%- if path is empty or '://' in path -%}
+  {%- set path = fallback_path|trim('/') -%}
+{%- endif -%}
+{%- set url = link(path) -%}
+{%- if query -%}{%- set url = url ~ '?' ~ query -%}{%- endif -%}
+{%- if 'salla.design' in url -%}{%- set url = url ~ (query ? '&' : '?') ~ 'preview=true' -%}{%- endif -%}
+{%- if fragment -%}{%- set url = url ~ '#' ~ fragment -%}{%- endif -%}
+{{- url|raw -}}
