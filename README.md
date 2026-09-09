@@ -19,7 +19,9 @@ rendered by Salla and only inherits the store colours.
 - `src/views/components/mussdl/` — header, footer
 - `tools/css/tailwind.css` → compiled to `src/assets/css/mussdl.css` (Tailwind v4, isolated toolchain)
 - `src/assets/js/mussdl.js` — animations, hero scroll-video, before/after slider, gallery
-- `src/assets/images/mussdl/`, `src/assets/video/` — brand media
+- `public/images/mussdl/`, `public/video/` — brand media, committed once (webpack's
+  `clean.keep` preserves them; add new media straight into `public/`). Hero video is
+  540×720 H.264 CRF 30 (~500 KB) — Salla caps private themes at 2 MB in total
 - `twilight.json` → **إعدادات ثيم مسدل** — the merchant-editable settings
 
 ## Build

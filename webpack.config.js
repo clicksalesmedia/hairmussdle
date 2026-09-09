@@ -25,7 +25,10 @@ module.exports = {
     },
     output : {
         path: public(),
-        clean: true,
+        // Brand media (public/images/mussdl, public/video) is committed once, in
+        // public/ only — Salla serves Twig themes straight from the repo, and a
+        // second copy under src/assets pushed the theme past the 2 MB size cap.
+        clean: { keep: /^(video|images\/mussdl)\// },
         chunkFilename: "[name].[contenthash].js"
     },
     stats  : {modules: false, assetsSort: "size", assetsSpace: 50},
@@ -63,8 +66,7 @@ module.exports = {
         new MiniCssExtractPlugin(),
         new CopyPlugin({patterns: [
             {from: asset('images'), to: public('images')},
-            {from: asset('css'),    to: public('css')},
-            {from: asset('video'),  to: public('video')}
+            {from: asset('css'),    to: public('css')}
         ]}),
     ],
     optimization: {
